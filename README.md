@@ -6,6 +6,7 @@ An embeddable chat assistant that helps a prospective student decide whether the
 
 - **Live demo:** https://lapaas-course-assistant.vercel.app (landing section) · https://lapaas-course-assistant.vercel.app/chat.html (full-page chat)
 - **Source code:** https://github.com/Himansho/lapaas-course-assistant
+- **Demo slides (phone-friendly):** https://lapaas-course-assistant.vercel.app/demo.html
 - **Built with:** plain JavaScript (no framework, no npm dependencies), one Vercel serverless function, Gemini API free tier.
 
 ## How it works
@@ -134,10 +135,12 @@ public/index.html      landing section (headline, value proposition, 3 verified 
 public/styles.css      landing styles (course-page theme, motion, reduced-motion support)
 public/landing.js      landing motion: chat preview, stage cycling, scroll reveal, simple-words cards
 public/chat.html       full-page chat (share link / iframe)
+public/demo.html       phone-friendly slides for the 5-minute demo
 public/widget.js       the embeddable widget (single file)
 public/kb/knowledge-base.json
 public/kb/glossary.json  simple meanings of technical terms (not course facts)
 tests/                 unit tests + scenario runner
+tests/evidence/        raw responses from the 5 saved test runs (used in the Test Sheet)
 scripts/build-kb-doc.js  generates the knowledge-base document for the submission
 dev-server.js          zero-dependency local server
 ```
