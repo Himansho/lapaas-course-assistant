@@ -1,17 +1,66 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Is this course right for you? | Lapaas AI Product Engineering (prototype)</title>
   <meta name="description" content="Answer 5 quick questions or ask anything, and find out in a minute if the Lapaas AI Product Engineering course suits you. Internship prototype, not an official Lapaas page.">
   <meta name="robots" content="noindex">
-  <meta name="theme-color" content="#ffffff">
+  <meta name="theme-color" content="#11110f">
+  <script>
+    /* Theme before first paint (default dark) + motion only if the visitor allows it. */
+    (function () {
+      var d = document.documentElement, t = "dark";
+      try { t = localStorage.getItem("lca-theme") === "light" ? "light" : "dark"; } catch (e) {}
+      d.setAttribute("data-theme", t);
+      if (window.matchMedia && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) d.classList.add("motion");
+    })();
+  </script>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23b9f24b'/%3E%3Ctext x='16' y='23' font-size='20' font-family='Arial' font-weight='700' text-anchor='middle' fill='%2311110f'%3E%3F%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
+  <style>
+    /* Dark theme (default): near-black surfaces, light text, same lime accent. */
+    html[data-theme="dark"] {
+      --text: #edede7; --text-soft: #a9aaa2; --bg: #11110f; --bg-soft: #1a1a17; --line: #2b2b27; --focus: #7fa8ff;
+      color-scheme: dark;
+    }
+    html[data-theme="dark"] .skip { color: var(--bg); }
+    html[data-theme="light"] { color-scheme: light; }
+
+    /* Header theme toggle */
+    .top-actions { display: flex; align-items: center; gap: 6px; }
+    .theme-toggle {
+      width: 44px; height: 44px; flex: none; display: grid; place-items: center; cursor: pointer;
+      border: 1px solid var(--line); border-radius: 10px; background: transparent; color: var(--text);
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .theme-toggle:hover { background: var(--bg-soft); border-color: var(--text-soft); }
+    .theme-toggle svg { width: 20px; height: 20px; }
+    html[data-theme="dark"] .i-moon, html[data-theme="light"] .i-sun { display: none; }
+    .top-actions .small-link { white-space: nowrap; }
+    @media (max-width: 520px) {
+      .top-inner { gap: 8px; }
+      .brand { font-size: 15px; gap: 8px; }
+      .top-actions { gap: 4px; }
+      .top-actions .small-link { padding: 0 2px; }
+    }
+
+    /* Motion: hero fades up on load; sections fade in as they scroll into view. */
+    .motion body { transition: background-color 0.25s ease, color 0.25s ease; }
+    .motion .hero .narrow > * { animation: rise 0.6s ease both; }
+    .motion .hero .narrow > :nth-child(2) { animation-delay: 0.08s; }
+    .motion .hero .narrow > :nth-child(3) { animation-delay: 0.16s; }
+    .motion .hero .narrow > :nth-child(4) { animation-delay: 0.24s; }
+    .motion .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .motion .reveal.in { opacity: 1; transform: none; }
+    @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) {
+      .theme-toggle { transition: none; }
+    }
+  </style>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
@@ -19,7 +68,13 @@
   <header class="top">
     <div class="wrap top-inner">
       <span class="brand"><span class="brand-mark" aria-hidden="true">?</span>Course assistant</span>
-      <a class="small-link" href="https://cohort.lapaas.com/?utm_source=course_assistant&amp;utm_medium=landing&amp;utm_campaign=fit_check" target="_blank" rel="noopener"><span class="long">View course on cohort.lapaas.com</span><span class="short">View course</span>&nbsp;↗</a>
+      <div class="top-actions">
+        <a class="small-link" href="https://cohort.lapaas.com/?utm_source=course_assistant&amp;utm_medium=landing&amp;utm_campaign=fit_check" target="_blank" rel="noopener"><span class="long">View course on cohort.lapaas.com</span><span class="short">View course</span>&nbsp;↗</a>
+        <button class="theme-toggle" type="button" aria-label="Switch to light theme" title="Switch to light theme">
+          <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
     </div>
   </header>
 
@@ -34,7 +89,7 @@
     </section>
 
     <section class="section" aria-labelledby="benefits-title">
-      <div class="wrap narrow">
+      <div class="wrap narrow reveal">
         <h2 id="benefits-title">What the official page says</h2>
         <ul class="benefits">
           <li>
@@ -60,7 +115,7 @@
     </section>
 
     <section class="section" aria-labelledby="honest-title">
-      <div class="wrap narrow">
+      <div class="wrap narrow reveal">
         <h2 id="honest-title">How this assistant stays honest</h2>
         <ul class="points">
           <li>It only uses facts from the official course page.</li>
@@ -71,7 +126,7 @@
     </section>
 
     <section class="section final" aria-labelledby="final-title">
-      <div class="wrap narrow">
+      <div class="wrap narrow reveal">
         <h2 id="final-title">Find out if it suits you</h2>
         <p class="lede small">5 quick questions. English or Hinglish is fine.</p>
         <div class="final-actions">
@@ -89,6 +144,32 @@
     </div>
   </footer>
 
+  <script>
+    (function () {
+      var d = document.documentElement, btn = document.querySelector(".theme-toggle"), meta = document.querySelector("meta[name=theme-color]");
+      function apply(t) {
+        var label = t === "dark" ? "Switch to light theme" : "Switch to dark theme";
+        d.setAttribute("data-theme", t);
+        btn.setAttribute("aria-label", label);
+        btn.title = label;
+        if (meta) meta.content = t === "dark" ? "#11110f" : "#ffffff";
+      }
+      apply(d.getAttribute("data-theme"));
+      btn.addEventListener("click", function () {
+        var t = d.getAttribute("data-theme") === "dark" ? "light" : "dark";
+        apply(t);
+        try { localStorage.setItem("lca-theme", t); } catch (e) {}
+      });
+
+      var items = document.querySelectorAll(".reveal");
+      function show(el) { el.classList.add("in"); }
+      if (!d.classList.contains("motion") || !("IntersectionObserver" in window)) { items.forEach(show); return; }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { if (e.isIntersecting) { show(e.target); io.unobserve(e.target); } });
+      }, { threshold: 0.15 });
+      items.forEach(function (el) { io.observe(el); });
+    })();
+  </script>
   <script src="/landing.js" defer></script>
   <script src="/widget.js" defer></script>
 </body>
