@@ -37,7 +37,7 @@ Any page ── <script src="https://lapaas-course-assistant.vercel.app/widget.j
    - only links to the official page or WhatsApp, no emails;
    - if the topic is "not stated" on the page, the answer must say so.
 4. **If a check fails, the visitor sees the verified knowledge-base answer instead**, tagged so the demo can show it.
-5. **Every reply says where it came from.** `mode` is `kb` (fixed answer), `ai` (Gemini, passed the checks), `fallback` (Gemini unavailable) or `guard` (Gemini's draft was rejected). The widget shows "From the official course page", "AI answer, checked against the official page" or "Not stated on the official page".
+5. **Every reply says where it came from.** `mode` is `kb` (fixed answer), `ai` (Gemini, passed the checks), `fallback` (Gemini unavailable) or `guard` (Gemini's draft was rejected). The widget shows a small tag under each answer: "From the official course page", "Not on the official course page" or "Part of this isn’t on the official course page" (the last two also show the WhatsApp button).
 6. Low temperature, 400-character input limit, last 6 turns of history, and a per-visitor limit on AI calls to protect the free quota. When the limit is hit, answers still come from the knowledge base.
 
 ### Plain language for students
