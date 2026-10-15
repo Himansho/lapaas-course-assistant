@@ -1,6 +1,6 @@
 # "Is this course right for me?": an honest course-fit assistant
 
-An embeddable chat assistant that helps a prospective student decide whether the **Lapaas AI Product Engineering** course (https://cohort.lapaas.com/) fits their background and goals. It asks 5 quick questions, gives an honest fit check, answers questions from a small verified knowledge base, and says **"I can't verify that"** instead of guessing.
+An embeddable chat assistant that helps a prospective student decide whether the **Lapaas AI Product Engineering** course (https://cohort.lapaas.com/) fits their background and goals. It asks 5 quick questions, tells the visitor honestly whether the course suits them, answers questions from a small verified knowledge base, and says **"I can't verify that"** instead of guessing.
 
 > **Prototype by Himanshu Bartwal for the Lapaas internship assignment (round 2). Not an official Lapaas page or product.** Course facts are taken from the official course page and were last checked on 15 October 2026.
 
@@ -60,7 +60,7 @@ Requires Node.js 20 or newer. There is nothing to install.
 npm run dev
 ```
 
-Open http://localhost:3000. Without a Gemini key the assistant works in **fallback mode**: the fit check and chips are unchanged, and typed questions are answered by keyword search over the knowledge base.
+Open http://localhost:3000. Without a Gemini key the assistant works in **fallback mode**: the 5 questions, the result and the chips work the same, and typed questions are answered by keyword search over the knowledge base.
 
 To turn on AI answers, copy `.env.example` to `.env` and add your own key from https://aistudio.google.com/ (free). `.env` is in `.gitignore` and must never be committed.
 
@@ -94,7 +94,7 @@ The API address is worked out from the script's own `src`, so nothing else is ne
 |---|---|---|
 | `data-position` | `left` | Launcher on the left (default `right`) |
 | `data-open` | `true` | Open the panel when the page loads |
-| `data-label` | `Course fit check` | Launcher text |
+| `data-label` | `Is this course right for me?` | Launcher text |
 | `data-mode` + `data-target` | `inline` + `#assistant` | Render inside an element instead of floating |
 
 JavaScript API: `window.LapaasAssistant.open()`, `.close()`, `.toggle()`, `.restart()`.
@@ -109,7 +109,7 @@ Theme: by default the widget uses the course page’s own look (Inter + Plus Jak
 Or use an iframe:
 
 ```html
-<iframe src="https://lapaas-course-assistant.vercel.app/chat.html" title="Course fit check" style="width:100%;height:640px;border:0"></iframe>
+<iframe src="https://lapaas-course-assistant.vercel.app/chat.html" title="Is this course right for me?" style="width:100%;height:640px;border:0"></iframe>
 ```
 
 The widget lives in a Shadow DOM, so the host page's CSS can't break it and it can't break the host page. It is keyboard accessible (Esc closes, focus moves into the panel and back), uses `aria-live` for new messages, respects `prefers-reduced-motion`, and goes full-screen on phones.
