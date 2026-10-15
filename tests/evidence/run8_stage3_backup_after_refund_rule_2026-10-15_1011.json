@@ -1,0 +1,356 @@
+{
+  "base": "https://lapaas-course-assistant.vercel.app",
+  "ran_at": "2026-10-15T04:41:53.841Z",
+  "results": [
+    {
+      "id": "V1",
+      "name": "Working professional who already codes, little time",
+      "expect": "Verdict \"Worth checking first\"; says professionals are not a named audience; no claim about what is new for this person beyond the curriculum list.",
+      "profile": {
+        "role": "professional",
+        "goal": "understand",
+        "coding": "comfortable",
+        "ai": "built_api",
+        "time": "lt3"
+      },
+      "fit": {
+        "http": 200,
+        "ms": 898,
+        "type": "fit",
+        "mode": "kb",
+        "verdict": {
+          "level": "check_first",
+          "label": "Worth checking first"
+        },
+        "intro": "Here’s your honest fit check, using only facts from the official course page:",
+        "points": [
+          {
+            "title": "Working professionals: judge it by your goal",
+            "text": "Working professionals aren’t one of the groups named on the page, but everyone gets the same course, so judge it by your goal. The page does speak to people who are “Worried your role will shrink” as routine work gets automated.",
+            "sources": [
+              "working-professionals"
+            ],
+            "kind": "point"
+          },
+          {
+            "title": "To understand how AI works",
+            "text": "The course starts with the basics, where you “Understand models, tokens, context and cost”: how tools like ChatGPT work and what they cost to run. Honest caution: it’s a hands-on course. The page says it’s not for people who want theory without shipping, which means without building and launching real things.",
+            "sources": [
+              "curriculum",
+              "not-for"
+            ],
+            "kind": "caution"
+          },
+          {
+            "title": "You already code",
+            "text": "My guidance, not a course fact: since you already code, most of the new learning for you is likely the product thinking, RAG, MCP, agents and launch parts. Check the nine curriculum areas to see how much is new.",
+            "sources": [
+              "curriculum"
+            ],
+            "kind": "note"
+          },
+          {
+            "title": "Check for overlap first",
+            "text": "You already code well and have built with AI APIs. Look through the nine curriculum areas on the official page to judge whether enough of it is new for you.",
+            "sources": [
+              "curriculum"
+            ],
+            "kind": "caution"
+          },
+          {
+            "title": "Plan your weekly time",
+            "text": "The page says “Plan for several hours each week to watch, practise and finish the project work.” You get 3 months of access, so with under 3 hours a week, make a weekly plan before you join.",
+            "sources": [
+              "weekly-time",
+              "access-3-months"
+            ],
+            "kind": "caution"
+          }
+        ],
+        "chips": [
+          {
+            "id": "tools",
+            "label": "Which tools?"
+          },
+          {
+            "id": "total-hours",
+            "label": "Total course hours?"
+          },
+          {
+            "id": "price-and-emi",
+            "label": "Price & EMI"
+          },
+          {
+            "id": "format-self-paced",
+            "label": "Live or recorded?"
+          }
+        ],
+        "profile_summary": "Working professional · goal: understand AI · coding: comfortable · AI: built with APIs · under 3 hrs/week",
+        "simple": [
+          {
+            "term": "Tokens",
+            "simple": "Small pieces of text that AI reads and writes. AI usage is often priced by tokens."
+          },
+          {
+            "term": "Context",
+            "simple": "The information you give the AI along with your question, so it can answer well."
+          },
+          {
+            "term": "RAG",
+            "simple": "Making AI answer from your own documents or data, so it doesn’t have to guess."
+          },
+          {
+            "term": "MCP",
+            "simple": "A standard way to plug AI into other apps and tools (like WhatsApp or a database) so it can use them."
+          },
+          {
+            "term": "AI agents",
+            "simple": "AI that can do steps by itself, like searching, filling forms or using tools, while a person keeps an eye on it."
+          },
+          {
+            "term": "API",
+            "simple": "A way for one app to talk to another app and share data."
+          }
+        ]
+      },
+      "answers": [
+        {
+          "question": "I already build apps with AI APIs. Will I actually learn anything new here?",
+          "http": 200,
+          "ms": 3984,
+          "type": "answer",
+          "mode": "ai",
+          "model": "gemini-3.8-flash",
+          "status": "answered",
+          "partial": false,
+          "answer": "Even if you call APIs, this course moves beyond basic prompts into full-stack AI product engineering. You will cover product research, PRDs, RAG to ground answers in private data, MCP to plug AI into tools, autonomous agents, and production deployment using Docker or Coolify. It teaches durable workflows to turn rough ideas into deployed products, tested through real software examples.",
+          "sources": [
+            {
+              "id": "what-is",
+              "question": "What is the Lapaas AI Product Engineering course?",
+              "status": "verified"
+            },
+            {
+              "id": "curriculum",
+              "question": "What does the course cover?",
+              "status": "verified"
+            },
+            {
+              "id": "stages-deliverables",
+              "question": "What will I have built by the end?",
+              "status": "verified"
+            }
+          ],
+          "unverified": false,
+          "related": [],
+          "simple": [
+            {
+              "term": "API",
+              "simple": "A way for one app to talk to another app and share data."
+            },
+            {
+              "term": "Full-stack",
+              "simple": "Building both the part people see (the screens) and the part behind it (the server and database)."
+            },
+            {
+              "term": "PRD / product brief",
+              "simple": "A short plan that says who the product is for, what problem it solves and what it will do."
+            },
+            {
+              "term": "RAG",
+              "simple": "Making AI answer from your own documents or data, so it doesn’t have to guess."
+            },
+            {
+              "term": "MCP",
+              "simple": "A standard way to plug AI into other apps and tools (like WhatsApp or a database) so it can use them."
+            },
+            {
+              "term": "AI agents",
+              "simple": "AI that can do steps by itself, like searching, filling forms or using tools, while a person keeps an eye on it."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "V2",
+      "name": "Budget-worried college student asking about money and refunds",
+      "expect": "Quotes the 30-day wording, says the refund policy has conditions and does not promise a refund; EMI only as the page states it.",
+      "profile": {
+        "role": "college",
+        "goal": "portfolio",
+        "coding": "none",
+        "ai": "chat_tools",
+        "time": "3to6"
+      },
+      "fit": {
+        "http": 200,
+        "ms": 562,
+        "type": "fit",
+        "mode": "kb",
+        "verdict": {
+          "level": "strong",
+          "label": "Looks like a strong fit"
+        },
+        "intro": "Here’s your honest fit check, using only facts from the official course page:",
+        "points": [
+          {
+            "title": "Made for students & freshers",
+            "text": "Students and freshers are one of the groups the course page speaks to directly. Its promise: “Graduate with proof, not just marks.” In simple words, you finish with projects you can show, not just grades. The page lists “Build a portfolio of working AI products” and “Turn projects into case studies and demos”.",
+            "sources": [
+              "students-benefits"
+            ],
+            "kind": "point"
+          },
+          {
+            "title": "For portfolio projects",
+            "text": "You build step by step, and each of the four stages ends with something you can show: first a checked idea with a rough first version, then a working app that saves real data, then AI that uses your own information and other tools, and finally your app live on the internet. The page calls that last one “A deployed product + improvement plan”. You finish with a portfolio people can inspect.",
+            "sources": [
+              "stages-deliverables",
+              "finish-with"
+            ],
+            "kind": "point"
+          },
+          {
+            "title": "No coding background? You can still start",
+            "text": "The course begins with the basics of AI, product and development, then moves step by step to building full apps. The page is honest that you “should still expect to practise and build alongside the lessons.” If you get stuck, you can contact Sahil and ask questions in the learner community.",
+            "sources": [
+              "coding-needed",
+              "community-ask-sahil"
+            ],
+            "kind": "point"
+          },
+          {
+            "title": "Your time matches what the page asks",
+            "text": "The page asks for people who “can commit a few focused hours each week”. You get 3 months of access, so a steady weekly routine helps.",
+            "sources": [
+              "weekly-time",
+              "access-3-months"
+            ],
+            "kind": "point"
+          }
+        ],
+        "chips": [
+          {
+            "id": "teaching-examples",
+            "label": "Real products used"
+          },
+          {
+            "id": "certificate",
+            "label": "Certificate?"
+          },
+          {
+            "id": "price-and-emi",
+            "label": "Price & EMI"
+          },
+          {
+            "id": "format-self-paced",
+            "label": "Live or recorded?"
+          }
+        ],
+        "profile_summary": "College student · goal: portfolio projects · coding: none · AI: chat tools · 3–6 hrs/week",
+        "simple": [
+          {
+            "term": "Portfolio",
+            "simple": "A collection of your work that you can show to recruiters or clients."
+          },
+          {
+            "term": "Case study",
+            "simple": "A short write-up of a project: the problem, what you built and what happened."
+          },
+          {
+            "term": "Deploy",
+            "simple": "Putting your app on the internet so anyone can open it with a link."
+          }
+        ]
+      },
+      "answers": [
+        {
+          "question": "Paise wapas milenge agar course pasand nahi aaya? Aur EMI hai kya?",
+          "http": 200,
+          "ms": 748,
+          "type": "answer",
+          "mode": "fallback",
+          "status": "answered",
+          "partial": false,
+          "answer": "The page shows a “30-day money-back guarantee”: “Start the course, work through the opening lessons and test the learning structure. If it is not the right fit, the existing Lapaas refund policy applies within 30 days.” The linked Lapaas refund policy has conditions (for example, a request by email with evidence of active participation and implementation) and doesn’t name this course. I can’t promise a refund, so please read the policy and confirm with the Lapaas team.\n\n₹2,999, one-time payment, GST included, with 3 months access. Checkout is via Razorpay. On EMI the page says: “Eligible cards may show Razorpay EMI options at checkout. The full course price is ₹2,999 including GST.”",
+          "sources": [
+            {
+              "id": "refund",
+              "question": "Is there a money-back guarantee?",
+              "status": "verified"
+            },
+            {
+              "id": "price-and-emi",
+              "question": "What is the price? Is EMI available?",
+              "status": "verified"
+            }
+          ],
+          "unverified": false,
+          "reason": "ai:http_503",
+          "related": [],
+          "simple": [
+            {
+              "term": "GST",
+              "simple": "India’s tax on goods and services."
+            },
+            {
+              "term": "EMI",
+              "simple": "Paying in monthly instalments instead of all at once."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "V3",
+      "name": "Off-topic and Hindi-script questions",
+      "expect": "Declines the off-topic request politely; answers the certificate question from the page and says the requirements are not stated.",
+      "profile": null,
+      "fit": null,
+      "answers": [
+        {
+          "question": "Can you write my college assignment on machine learning?",
+          "http": 200,
+          "ms": 3143,
+          "type": "answer",
+          "mode": "ai",
+          "model": "gemini-3.5-flash-lite",
+          "status": "off_topic",
+          "partial": false,
+          "answer": "I can only help with questions about the Lapaas AI Product Engineering course, like what it covers, who it suits, price, access or format.",
+          "sources": [],
+          "unverified": false,
+          "related": [
+            {
+              "id": "students-benefits",
+              "label": "For students & freshers"
+            }
+          ],
+          "simple": []
+        },
+        {
+          "question": "क्या इस कोर्स में सर्टिफिकेट मिलता है?",
+          "http": 200,
+          "ms": 1401,
+          "type": "answer",
+          "mode": "ai",
+          "model": "gemini-3.5-flash-lite",
+          "status": "answered",
+          "partial": false,
+          "answer": "हाँ, कोर्स की आवश्यकताएं पूरी करने पर आपको Lapaas AI Product Engineering completion certificate मिलता है।",
+          "sources": [
+            {
+              "id": "certificate",
+              "question": "Will I get a certificate?",
+              "status": "verified"
+            }
+          ],
+          "unverified": false,
+          "related": [],
+          "simple": []
+        }
+      ]
+    }
+  ]
+}
