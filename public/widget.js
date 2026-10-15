@@ -51,7 +51,7 @@
     '.launcher{position:fixed;bottom:20px;z-index:2147483000;display:flex;align-items:center;gap:10px;padding:13px 18px 13px 15px;',
     'border:1px solid rgba(255,255,255,.14);border-radius:999px;background:var(--_ink);color:#fff;font:700 15px/1.2 var(--_display);',
     'box-shadow:0 14px 34px rgba(17,17,15,.28);transition:transform .18s ease;animation:lca-pop .4s ease both}',
-    '.launcher:hover{transform:translateY(-2px)}',
+    '.launcher:hover{transform:translateY(-2px);box-shadow:0 0 0 4px rgba(185,242,75,.4),0 14px 34px rgba(17,17,15,.28)}',
     '.launcher .dot{width:11px;height:11px;border-radius:50%;background:var(--_mark);animation:lca-ring 2.2s ease-in-out infinite}',
     '.launcher.right{right:20px}.launcher.left{left:20px}',
     '.launcher[hidden]{display:none}',
@@ -69,7 +69,8 @@
     '.head p{margin:3px 0 0;font-size:12.5px;color:rgba(255,255,255,.72)}',
     '.head p b{color:var(--_mark);font-weight:700}',
     '.iconbtn{border:0;background:transparent;color:#fff;width:36px;height:36px;border-radius:8px;display:grid;place-items:center}',
-    '.iconbtn:hover{background:rgba(255,255,255,.12)}',
+    '.iconbtn:hover{background:rgba(255,255,255,.16)}',
+    '.head :focus-visible{outline-color:var(--_mark)}',
     '.iconbtn svg{width:18px;height:18px}',
     '.log{flex:1;overflow-y:auto;padding:16px 14px 8px;display:flex;flex-direction:column;gap:10px;overscroll-behavior:contain}',
     '.log>*{flex-shrink:0;animation:lca-in .3s ease both}',
@@ -80,16 +81,19 @@
     '.bar{flex:1;max-width:90px;height:4px;border-radius:4px;background:var(--_warm);overflow:hidden}',
     '.bar i{display:block;height:100%;background:var(--_mark-dark);transition:width .4s ease}',
     '.options{display:flex;flex-wrap:wrap;gap:8px;align-self:stretch}',
-    '.opt{border:1px solid var(--_ink);background:var(--_surface);color:var(--_ink);border-radius:999px;padding:8px 14px;font-weight:600;font-size:14px;text-align:left;transition:background .15s ease,transform .15s ease}',
-    '.opt:hover{background:var(--_mark);transform:translateY(-1px)}',
-    '.opt.ghost{border-color:var(--_line);color:var(--_muted)}',
-    '.opt.ghost:hover{background:var(--_warm);color:var(--_ink)}',
-    '.opt[disabled]{opacity:.4;cursor:default;background:var(--_surface);transform:none}',
+    '.opt{border:1.5px solid var(--_ink);background:var(--_surface);color:var(--_ink);border-radius:999px;padding:9px 15px;font-weight:600;font-size:14px;text-align:left;transition:background .15s ease,box-shadow .15s ease,transform .15s ease}',
+    '.opt:not([disabled]):hover{background:#f1fbdc;box-shadow:0 0 0 3px rgba(185,242,75,.6);transform:translateY(-1px)}',
+    '.opt.ghost{border:1px solid var(--_line);color:var(--_muted)}',
+    '.opt.ghost:not([disabled]):hover{background:var(--_warm);color:var(--_ink);box-shadow:0 0 0 3px rgba(17,17,15,.08)}',
+    '.opt[disabled]{opacity:.35;cursor:default;background:var(--_surface);transform:none;box-shadow:none}',
+    '.opt.selected,.opt.selected[disabled]{opacity:1;background:var(--_mark);border-color:var(--_ink);color:var(--_ink)}',
+    '.opt.selected::before{content:"✓ ";font-weight:800}',
     '.tag{display:flex;width:fit-content;align-items:center;gap:6px;margin-top:10px;padding:3px 9px;border-radius:999px;font-size:12px;font-weight:700;background:var(--_ok-bg);color:var(--_ok-ink)}',
     '.tag.warn{background:var(--_warn-bg);color:var(--_warn-ink)}',
     '.meta{display:block;margin-top:6px;font-size:12px;color:var(--_muted)}',
     '.simple{display:block;margin-top:10px;border-left:3px solid var(--_mark-dark);background:#f7faef;border-radius:0 8px 8px 0;font-size:13.5px;white-space:normal}',
-    '.simple summary{cursor:pointer;padding:7px 10px;font-weight:700;color:var(--_ok-ink);list-style:none}',
+    '.simple summary{cursor:pointer;padding:7px 10px;font-weight:700;color:var(--_ok-ink);list-style:none;text-decoration:underline;text-underline-offset:3px}',
+    '.simple summary:hover{text-decoration-thickness:2px}',
     '.simple summary::-webkit-details-marker{display:none}',
     '.simple summary::before{content:"+ ";font-weight:800}',
     '.simple[open] summary::before{content:"− "}',
@@ -122,9 +126,15 @@
     '.compose input:focus{border-color:var(--_ink);outline:none;box-shadow:0 0 0 3px rgba(185,242,75,.6)}',
     '.send{border:0;border-radius:6px;padding:0 16px;background:var(--_accent);color:var(--_accent-ink);font-weight:700}',
     '.send[disabled]{opacity:.5;cursor:default}',
+    '.send:not([disabled]):hover{background:#2c2c27;box-shadow:0 0 0 3px rgba(17,17,15,.15)}',
     '.next{display:flex;gap:8px;padding:0 12px 8px;background:var(--_surface)}',
     '.cta{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;gap:6px;min-height:44px;padding:8px;border-radius:6px;font-weight:700;font-size:13.5px;text-decoration:none;line-height:1.2;transition:transform .18s ease}',
     '.cta:hover{transform:translateY(-1px)}',
+    '.cta.primary:hover{background:#a8e33a;box-shadow:0 0 0 3px rgba(185,242,75,.45)}',
+    '.cta.secondary:hover{background:var(--_paper);box-shadow:0 0 0 3px rgba(17,17,15,.08)}',
+    '.next.quiet .cta{min-height:36px;font-size:12.5px;font-weight:600}',
+    '.next.quiet .cta.primary{background:transparent;border:1px solid var(--_line);color:var(--_ink)}',
+    '.next.quiet .cta.secondary{border-color:var(--_line);color:var(--_muted)}',
     '.cta.primary{background:var(--_mark);color:var(--_ink)}',
     '.cta.secondary{border:1px solid var(--_ink);color:var(--_ink);background:transparent}',
     '.legal{margin:0;padding:0 12px 10px;font-size:11.5px;color:var(--_muted);background:var(--_surface);padding-bottom:max(10px,env(safe-area-inset-bottom))}',
@@ -198,7 +208,7 @@
   var form = el('form', { class: 'compose', onsubmit: onSubmit }, [el('label', { for: 'lca-input', text: 'Your question' }), input, sendBtn]);
   var courseLink = el('a', { class: 'cta primary', target: '_blank', rel: 'noopener', href: FALLBACK_LINKS.course, onclick: function () { track('cta_course', { where: state.phase }); } }, ['View course & price ↗']);
   var waLink = el('a', { class: 'cta secondary', target: '_blank', rel: 'noopener', href: FALLBACK_LINKS.whatsapp, onclick: function () { track('cta_whatsapp', { where: state.phase }); } }, ['Ask the team on WhatsApp ↗']);
-  var next = el('div', { class: 'next' }, [courseLink, waLink]);
+  var next = el('div', { class: 'next quiet' }, [courseLink, waLink]); // quiet until there is a result
   var legal = el('p', { class: 'legal', text: 'Prototype by Himanshu Bartwal for the Lapaas internship assignment. Not an official Lapaas page. Please don’t share personal details.' });
 
   var headTitleId = 'lca-title';
@@ -301,8 +311,10 @@
       row.appendChild(el('button', {
         class: 'opt' + (it.ghost ? ' ghost' : '') + (extraClass ? ' ' + extraClass : ''),
         type: 'button',
-        onclick: function () {
+        onclick: function (e) {
           if (state.busy) return;
+          e.currentTarget.classList.add('selected');
+          e.currentTarget.setAttribute('aria-pressed', 'true');
           disableOptions(row);
           onPick(it);
         },
@@ -318,17 +330,17 @@
 
   // ---------- flow ----------
   function welcome() {
-    botText('Hi! 👋 Not sure if the Lapaas AI Product Engineering course is right for you? I can help.\n\nAnswer 5 quick questions (just tap), and I’ll give you an honest fit check. Or ask me anything. I only use facts from the official course page, and I’ll tell you clearly when something isn’t written there.');
+    botText('Hi! 👋 Not sure if the Lapaas AI Product Engineering course is right for you? I can help.\n\nAnswer 5 quick questions (just tap) and I’ll tell you honestly if it suits you. Or ask me anything. I only use facts from the official course page, and I’ll tell you clearly when something isn’t written there.');
     var row = optionRow(
-      [{ id: 'start', label: 'Start the fit check' }, { id: 'skip', label: 'Skip, I just have a question', ghost: true }],
+      [{ id: 'start', label: 'Check in 1 minute' }, { id: 'skip', label: 'I just have a question', ghost: true }],
       function (it) {
         if (it.id === 'start') {
-          userText('Start the fit check');
+          userText('Check in 1 minute');
           track('intake_start');
           state.phase = 'intake';
           focusFirst(askIntake());
         } else {
-          userText('Skip, I just have a question');
+          userText('I just have a question');
           track('intake_skip');
           state.phase = 'chat';
           showSuggestions(defaultChips(), 'Here are some common questions. Tap one, or type your own:');
@@ -374,6 +386,7 @@
         state.profileSummary = fit.profile_summary || '';
         updateWhatsApp();
         var card = renderFit(fit);
+        next.classList.remove('quiet');
         track('intake_complete', { verdict: fit.verdict && fit.verdict.level, role: state.profile.role, goal: state.profile.goal });
         showSuggestions(fit.chips || [], 'Questions people like you often ask. Tap one, or type your own:');
         log.scrollTop = card.offsetTop - log.offsetTop - 12; // show the summary from its top
@@ -391,10 +404,10 @@
     (fit.points || []).forEach(function (p) {
       list.appendChild(el('li', { class: p.kind || 'point' }, [el('strong', { text: p.title }), el('p', { text: p.text })]));
     });
-    return add(el('div', { class: 'fit', role: 'group', tabindex: '-1', 'aria-label': 'Your fit check' }, [
+    return add(el('div', { class: 'fit', role: 'group', tabindex: '-1', 'aria-label': 'Your result' }, [
       el('div', { class: 'verdict ' + ((fit.verdict && fit.verdict.level) || '') }, [
         el('span', { class: 'badge', 'aria-hidden': 'true' }),
-        (fit.verdict && fit.verdict.label) || 'Your fit check',
+        (fit.verdict && fit.verdict.label) || 'Your result',
         el('small', { text: fit.intro || '' }),
       ]),
       list,
@@ -444,7 +457,7 @@
         track('ask', { mode: ans.mode, status: ans.status });
         renderAnswer(ans, text);
         if (state.phase === 'intake') {
-          botText('Let’s continue with your fit check.');
+          botText('Let’s continue with your 5 questions.');
           focusFirst(askIntake());
         } else {
           followUps(ans);
@@ -503,6 +516,7 @@
       updateWhatsApp();
     }
     botText(ans.answer || '', sourceLine(ans).concat([simpleBox(ans.simple)]));
+    next.classList.remove('quiet');
   }
 
   function followUps(ans) {
@@ -580,6 +594,7 @@
   function restart() {
     state = freshState();
     log.innerHTML = '';
+    next.classList.add('quiet');
     updateWhatsApp();
     started = false;
     start();

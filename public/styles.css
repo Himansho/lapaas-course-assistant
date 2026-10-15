@@ -25,7 +25,7 @@
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.6 var(--body); }
 a { color: inherit; }
-:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--focus, var(--blue)); outline-offset: 3px; border-radius: 4px; }
 h1, h2, h3 { font-family: var(--display); letter-spacing: -0.03em; margin: 0; }
 .page { width: var(--page); margin-inline: auto; }
 main section[id] { scroll-margin-top: 90px; }
@@ -51,9 +51,10 @@ main section[id] { scroll-margin-top: 90px; }
 .wordmark { display: inline-flex; align-items: center; gap: 10px; font: 800 16px/1 var(--display); text-decoration: none; white-space: nowrap; }
 .wordmark-mark { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; background: var(--lime); color: var(--ink); }
 .nav-links { display: flex; gap: 22px; margin-left: auto; font-size: 14px; font-weight: 600; }
-.nav-links a { text-decoration: none; color: rgba(255, 255, 255, 0.78); }
-.nav-links a:hover { color: var(--lime); }
-.nav-cta { padding: 11px 18px; border-radius: 999px; background: var(--paper); color: var(--ink); font-weight: 700; font-size: 14px; text-decoration: none; white-space: nowrap; }
+.nav-links a { text-decoration: none; color: rgba(255, 255, 255, 0.78); padding: 6px 4px; text-underline-offset: 6px; }
+.nav-links a:hover { color: var(--lime); text-decoration: underline; }
+.nav-cta { padding: 10px 16px; border-radius: 999px; background: transparent; color: #fff; border: 1px solid rgba(255, 255, 255, 0.4); font-weight: 600; font-size: 14px; text-decoration: none; white-space: nowrap; transition: border-color 0.15s ease, color 0.15s ease; }
+.nav-cta:hover { border-color: var(--lime); color: var(--lime); }
 
 /* Buttons */
 .actions { display: flex; flex-wrap: wrap; gap: 12px; }
@@ -64,9 +65,11 @@ main section[id] { scroll-margin-top: 90px; }
 }
 .button svg { width: 18px; height: 18px; transition: transform 0.18s ease; }
 .button:hover { transform: translateY(-2px); }
+.button:active { transform: translateY(0); }
 .button:hover svg { transform: translate(2px, -2px); }
 .button-lime { background: var(--lime); color: var(--ink); }
-.button-lime:hover { background: #c6f86a; }
+.button-lime { box-shadow: 0 0 0 0 rgba(185, 242, 75, 0); }
+.button-lime:hover { background: #a8e33a; box-shadow: 0 0 0 4px rgba(185, 242, 75, 0.35); }
 .button-dark { background: transparent; color: var(--white); border-color: rgba(255, 255, 255, 0.36); }
 .button-dark:hover { border-color: var(--white); }
 .button-ink { background: var(--ink); color: var(--white); }
@@ -86,7 +89,7 @@ main section[id] { scroll-margin-top: 90px; }
   background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
   background-size: 56px 56px; mask-image: radial-gradient(ellipse at 60% 40%, #000 30%, transparent 75%); -webkit-mask-image: radial-gradient(ellipse at 60% 40%, #000 30%, transparent 75%);
 }
-.glow { position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.38; animation: breathe 14s ease-in-out infinite alternate; }
+.glow { position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.26; animation: breathe 14s ease-in-out infinite alternate; }
 .g1 { width: 420px; height: 420px; background: var(--lime); top: -120px; right: 8%; }
 .g2 { width: 320px; height: 320px; background: var(--blue); bottom: -140px; left: -60px; opacity: 0.22; animation-duration: 18s; }
 @keyframes breathe { from { transform: scale(1) translate(0, 0); } to { transform: scale(1.18) translate(-30px, 24px); } }
@@ -184,8 +187,7 @@ section h2 { font-size: clamp(32px, 4.4vw, 54px); line-height: 1.05; font-weight
 /* Benefits */
 .benefits { background: var(--white); border-block: 1px solid var(--line); }
 .benefit-grid { margin-top: 40px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-.benefit { padding: 26px 24px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); transition: transform 0.2s ease, box-shadow 0.2s ease; }
-.benefit:hover { transform: translateY(-4px); box-shadow: 0 24px 50px rgba(17, 17, 15, 0.08); }
+.benefit { padding: 26px 24px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); }
 .benefit > i { font-style: normal; font: 800 13px/1 var(--display); color: var(--blue); }
 .benefit h3 { margin: 14px 0 10px; font-size: 22px; line-height: 1.2; }
 .benefit p { margin: 0 0 16px; color: #3d3e39; }
@@ -211,8 +213,7 @@ section h2 { font-size: clamp(32px, 4.4vw, 54px); line-height: 1.05; font-weight
 /* Simple words */
 .words-sub { max-width: 640px; color: #3d3e39; margin: 18px 0 36px; font-size: 17px; }
 .word-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
-.word { padding: 20px; border: 1px solid var(--line); border-radius: 8px; background: var(--white); animation: node-float 6s ease-in-out infinite; }
-.word:nth-child(2n) { animation-delay: -1.5s; } .word:nth-child(3n) { animation-delay: -3s; } .word:nth-child(4n) { animation-delay: -4.5s; }
+.word { padding: 20px; border: 1px solid var(--line); border-radius: 8px; background: var(--white); }
 .word b { display: inline-block; padding: 3px 10px; border-radius: 999px; background: var(--lime); font: 800 15px/1.3 var(--display); }
 .word p { margin: 12px 0 0; font-size: 15px; color: #33342f; }
 
@@ -260,6 +261,9 @@ section h2 { font-size: clamp(32px, 4.4vw, 54px); line-height: 1.05; font-weight
   :root { --page: calc(100% - 32px); }
   .hero { padding-top: 104px; }
   .button { width: 100%; }
+  .actions { flex-direction: column; align-items: stretch; gap: 6px; }
+  .text-link { justify-content: center; }
+  .wordmark-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .demo-log { height: 330px; }
   .map { height: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .map-lines { display: none; }
@@ -278,3 +282,19 @@ section h2 { font-size: clamp(32px, 4.4vw, 54px); line-height: 1.05; font-weight
   .stage .stage-bar i { width: 0; }
   .stage.is-active .stage-bar i { width: 100%; }
 }
+
+/* ---- Clickable affordance (tester feedback: "hard to tell what's clickable") ---- */
+.hero, .build, .final, .nav-inner, .disclaimer { --focus: var(--lime); }
+.actions { align-items: center; }
+/* Secondary actions are plain underlined links, so the lime button is the one clear primary action. */
+.text-link {
+  display: inline-flex; align-items: center; min-height: 44px; padding: 0 6px;
+  font-weight: 600; font-size: 15px; text-decoration: underline; text-underline-offset: 4px;
+  text-decoration-thickness: 1px; transition: color 0.15s ease, text-decoration-thickness 0.15s ease;
+}
+.text-link-light { color: rgba(255, 255, 255, 0.78); }
+.text-link-light:hover { color: #fff; text-decoration-thickness: 2px; }
+/* Links inside text are always underlined and react on hover. */
+.source-note a, .foot a { text-decoration: underline; text-underline-offset: 3px; transition: color 0.15s ease; }
+.source-note a:hover, .foot a:hover { color: var(--blue); text-decoration-thickness: 2px; }
+.wordmark:hover .wordmark-text { text-decoration: underline; text-underline-offset: 4px; }
