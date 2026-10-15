@@ -9,6 +9,14 @@ test('accepts a faithful answer', () => {
   assert.equal(r.ok, true, r.reason);
 });
 
+test('accepts source ids written with brackets, as the model sometimes does', () => {
+  // Found in live testing on Vercel: source_ids came back as "[coding-needed]".
+  const r = ok('You can start without knowing coding.', ['[coding-needed]']);
+  assert.equal(r.ok, true, r.reason);
+  assert.deepEqual(r.sources.map((e) => e.id), ['coding-needed']);
+  assert.equal(ok('Yes.', ['[made-up-id]']).reason, 'unknown_source');
+});
+
 test('rejects unknown sources and answers without sources', () => {
   assert.equal(ok('Yes.', ['made-up-id']).reason, 'unknown_source');
   assert.equal(ok('Yes, it is self-paced.', []).reason, 'answered_without_source');

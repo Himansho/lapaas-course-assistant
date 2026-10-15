@@ -4,13 +4,14 @@ An embeddable chat assistant that helps a prospective student decide whether the
 
 > **Prototype by Himanshu Bartwal for the Lapaas internship assignment (round 2). Not an official Lapaas page or product.** Course facts are taken from the official course page and were last checked on 15 October 2026.
 
-- **Live demo:** `https://<app>.vercel.app` (landing section) · `https://<app>.vercel.app/chat.html` (full-page chat)
+- **Live demo:** https://lapaas-course-assistant.vercel.app (landing section) · https://lapaas-course-assistant.vercel.app/chat.html (full-page chat)
+- **Source code:** https://github.com/Himansho/lapaas-course-assistant
 - **Built with:** plain JavaScript (no framework, no npm dependencies), one Vercel serverless function, Gemini API free tier.
 
 ## How it works
 
 ```
-Any page ── <script src="https://<app>.vercel.app/widget.js" defer></script>
+Any page ── <script src="https://lapaas-course-assistant.vercel.app/widget.js" defer></script>
               floating button + chat panel (Shadow DOM), or /chat.html inline
                     │  POST /api/chat
                     ▼
@@ -83,7 +84,7 @@ node tests/scenarios.js http://localhost:3000    # the test-sheet scenarios agai
 ## Embed it on any page
 
 ```html
-<script src="https://<app>.vercel.app/widget.js" defer></script>
+<script src="https://lapaas-course-assistant.vercel.app/widget.js" defer></script>
 ```
 
 The API address is worked out from the script's own `src`, so nothing else is needed. Options:
@@ -101,13 +102,13 @@ Theme: by default the widget uses the course page’s own look (Inter + Plus Jak
 **On cohort.lapaas.com** the WhatsApp button already sits in the bottom-right corner, so embed with `data-position="left"`:
 
 ```html
-<script src="https://<app>.vercel.app/widget.js" data-position="left" defer></script>
+<script src="https://lapaas-course-assistant.vercel.app/widget.js" data-position="left" defer></script>
 ```
 
 Or use an iframe:
 
 ```html
-<iframe src="https://<app>.vercel.app/chat.html" title="Course fit check" style="width:100%;height:640px;border:0"></iframe>
+<iframe src="https://lapaas-course-assistant.vercel.app/chat.html" title="Course fit check" style="width:100%;height:640px;border:0"></iframe>
 ```
 
 The widget lives in a Shadow DOM, so the host page's CSS can't break it and it can't break the host page. It is keyboard accessible (Esc closes, focus moves into the panel and back), uses `aria-live` for new messages, respects `prefers-reduced-motion`, and goes full-screen on phones.
