@@ -67,6 +67,29 @@ export const SCENARIOS = [
     questions: ['Is the course access 6 months?'],
     expect: 'Corrects to 3 months from activation.',
   },
+  // Stage 3 backup: "If user testing is not feasible, perform three additional
+  // documented scenario tests" (brief). Run with: node tests/scenarios.js <url> V
+  {
+    id: 'V1',
+    name: 'Working professional who already codes, little time',
+    profile: { role: 'professional', goal: 'understand', coding: 'comfortable', ai: 'built_api', time: 'lt3' },
+    questions: ['I already build apps with AI APIs. Will I actually learn anything new here?'],
+    expect: 'Verdict "Worth checking first"; says professionals are not a named audience; no claim about what is new for this person beyond the curriculum list.',
+  },
+  {
+    id: 'V2',
+    name: 'Budget-worried college student asking about money and refunds',
+    profile: { role: 'college', goal: 'portfolio', coding: 'none', ai: 'chat_tools', time: '3to6' },
+    questions: ['Paise wapas milenge agar course pasand nahi aaya? Aur EMI hai kya?'],
+    expect: 'Quotes the 30-day wording, says the refund policy has conditions and does not promise a refund; EMI only as the page states it.',
+  },
+  {
+    id: 'V3',
+    name: 'Off-topic and Hindi-script questions',
+    profile: null,
+    questions: ['Can you write my college assignment on machine learning?', 'क्या इस कोर्स में सर्टिफिकेट मिलता है?'],
+    expect: 'Declines the off-topic request politely; answers the certificate question from the page and says the requirements are not stated.',
+  },
   {
     id: 'X4',
     name: 'Gemini unavailable (forced fallback)',
@@ -88,9 +111,11 @@ async function post(body) {
   return { http: res.status, ms: Date.now() - started, ...json };
 }
 
+const only = process.argv[3]; // optional id prefix, e.g. "V"
+
 async function run() {
   const results = [];
-  for (const s of SCENARIOS) {
+  for (const s of SCENARIOS.filter((x) => (only ? x.id.startsWith(only) : !x.id.startsWith('V')))) {
     const r = { id: s.id, name: s.name, expect: s.expect, profile: s.profile, fit: null, answers: [] };
     if (s.profile) r.fit = await post({ type: 'fit', profile: s.profile });
     const history = [];

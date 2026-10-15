@@ -88,6 +88,14 @@ test('only official links, no emails', () => {
   assert.equal(ok('Email support@example.com for details.', ['what-is']).reason, 'email_in_answer');
 });
 
+test('Hindi answers get the same number check (Devanagari digits and number words)', () => {
+  // Found while fixing reply language in the Stage 3 backup tests.
+  assert.equal(ok('आपको ६ महीने का access मिलता है।', ['access-3-months']).reason, 'number_not_in_sources');
+  assert.equal(ok('आपको छह महीने का access मिलता है।', ['access-3-months']).detail, 'छह');
+  assert.equal(ok('आपको ३ महीने का access मिलता है।', ['access-3-months']).ok, true);
+  assert.equal(ok('आपको तीन महीने का access मिलता है।', ['access-3-months']).ok, true);
+});
+
 test('the official WhatsApp number is allowed', () => {
   assert.equal(ok('Message the Lapaas team on WhatsApp at +91 95400 65704.', ['contact-whatsapp']).ok, true);
 });

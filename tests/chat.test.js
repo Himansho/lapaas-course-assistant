@@ -1,7 +1,7 @@
 import { test, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { respond, CANT_VERIFY } from '../api/chat.js';
-import { rankModels, _resetGeminiCache } from '../lib/gemini.js';
+import { rankModels, detectLanguage, _resetGeminiCache } from '../lib/gemini.js';
 
 const realFetch = globalThis.fetch;
 const realLog = console.log;
@@ -229,6 +229,20 @@ test('fallback answers each part of a two-part question', async () => {
   assert.equal(r.json.mode, 'fallback');
   assert.deepEqual(r.json.sources.map((s) => s.id), ['coding-needed', 'price-and-emi']);
   assert.match(r.json.answer, /₹2,999/);
+});
+
+test('reply language follows the visitor (found in Stage 3 backup tests V2 and V3)', async () => {
+  assert.equal(detectLanguage('Paise wapas milenge agar course pasand nahi aaya? Aur EMI hai kya?').code, 'hinglish');
+  assert.equal(detectLanguage('fees kitni hai').code, 'hinglish');
+  assert.equal(detectLanguage('क्या इस कोर्स में सर्टिफिकेट मिलता है?').code, 'hi');
+  assert.equal(detectLanguage('Is access 6 months?').code, 'en');
+  assert.equal(detectLanguage('Can I watch on phone and laptop both?').code, 'en');
+
+  process.env.GEMINI_API_KEY = 'test-key-not-real';
+  const calls = fakeGemini([aiSays({ status: 'answered', answer: 'Haan, certificate milta hai.', source_ids: ['certificate'] })]);
+  await respond({ type: 'ask', message: 'क्या इस कोर्स में सर्टिफिकेट मिलता है?' });
+  const userText = calls[0].body.contents.at(-1).parts[0].text;
+  assert.match(userText, /Reply language: Hindi, written in Devanagari script/);
 });
 
 test('noAi flag forces the fallback path (used to demo Gemini being down)', async () => {
