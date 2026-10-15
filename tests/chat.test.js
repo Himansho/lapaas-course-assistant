@@ -195,6 +195,35 @@ test('a busy model is skipped for the next request', async () => {
   assert.deepEqual(calls.map((c) => c.model), ['gemini-3.8-flash', 'gemini-3.7-flash', 'gemini-3.7-flash']);
 });
 
+test('a model that hangs is cut off and the next model answers', async () => {
+  // Found in live testing: one slow model used the whole time budget.
+  process.env.GEMINI_API_KEY = 'test-key-not-real';
+  process.env.GEMINI_CALL_TIMEOUT_MS = '200';
+  const calls = [];
+  globalThis.fetch = async (url, init) => {
+    const u = String(url);
+    if (u.includes('/models?')) {
+      return Response.json({ models: ['gemini-3.8-flash', 'gemini-3.7-flash'].map((m) => ({ name: `models/${m}`, supportedGenerationMethods: ['generateContent'] })) });
+    }
+    const model = decodeURIComponent(u.match(/models\/([^:]+):generateContent/)[1]);
+    calls.push(model);
+    if (model === 'gemini-3.8-flash') {
+      return new Promise((_, reject) => init.signal.addEventListener('abort', () => reject(init.signal.reason)));
+    }
+    return Response.json({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: JSON.stringify({ status: 'answered', answer: 'It’s self-paced.', source_ids: ['format-self-paced'] }) }] } }] });
+  };
+  try {
+    const t0 = Date.now();
+    const r = await respond({ type: 'ask', message: 'Is it live?' });
+    assert.equal(r.json.mode, 'ai');
+    assert.equal(r.json.model, 'gemini-3.7-flash');
+    assert.ok(Date.now() - t0 < 3000, 'should not wait for the whole budget');
+    assert.deepEqual(calls, ['gemini-3.8-flash', 'gemini-3.7-flash']);
+  } finally {
+    delete process.env.GEMINI_CALL_TIMEOUT_MS;
+  }
+});
+
 test('fallback answers each part of a two-part question', async () => {
   const r = await respond({ type: 'ask', message: 'Mujhe coding nahi aati, kya main ye course kar sakta hoon? Fees kitni hai?' });
   assert.equal(r.json.mode, 'fallback');
