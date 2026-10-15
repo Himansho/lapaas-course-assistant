@@ -16,7 +16,7 @@ const MAX_HISTORY_TURNS = 6;
 const MAX_HISTORY_TEXT = 600;
 
 export const CANT_VERIFY =
-  'I can’t verify that from the official course page, so I won’t guess. The Lapaas team can answer it: tap “Ask the Lapaas team on WhatsApp” below.';
+  'From the information I have, I can’t confirm that, so I won’t guess. The Lapaas team can help: tap “Ask the Lapaas team on WhatsApp”.';
 export const OFF_TOPIC =
   'I can only help with questions about the Lapaas AI Product Engineering course, like what it covers, who it suits, price, access or format.';
 

@@ -1,5 +1,5 @@
 /*!
- * "Is this course right for me?" assistant: embeddable widget.
+ * Lapaas course assistant: embeddable "Is this course right for me?" chat widget.
  * Prototype by Himanshu Bartwal for the Lapaas internship assignment.
  * Not an official Lapaas product.
  *
@@ -24,125 +24,132 @@
   var opt = (script && script.dataset) || {};
   var INLINE = opt.mode === 'inline';
   var POSITION = opt.position === 'left' ? 'left' : 'right';
+  var REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   var FALLBACK_LINKS = {
     course: 'https://cohort.lapaas.com/?utm_source=course_assistant&utm_medium=chat&utm_campaign=fit_check',
     whatsapp: 'https://wa.me/919540065704',
-    whatsapp_number: '+91 95400 65704',
   };
   var MAX_LEN = 400;
 
-  // Theme follows the official course page (Inter + Plus Jakarta Sans, ink / paper / acid lime),
-  // so the widget feels native when embedded there. Hosts can override any --lca-* variable.
+  // Calm, neutral chat UI. One accent green (lime) for primary actions; a deeper
+  // green for the visitor's own messages so white text stays readable.
   var CSS = [
-    ':host{all:initial;--_ink:var(--lca-ink,#11110f);--_ink-soft:#1d1d19;--_paper:var(--lca-paper,#f5f5ef);--_surface:var(--lca-surface,#ffffff);',
-    '--_warm:#ece9df;--_accent:var(--lca-accent,#11110f);--_accent-ink:var(--lca-accent-ink,#ffffff);--_mark:var(--lca-mark,#b9f24b);',
-    '--_mark-dark:#96cf25;--_coral:#ff6b5e;--_blue:#4f72ff;--_muted:var(--lca-muted,#696a64);--_line:var(--lca-line,rgba(17,17,15,.16));',
-    '--_ok-bg:#eef9d6;--_ok-ink:#2f4a00;--_warn-bg:#ffe9e6;--_warn-ink:#8f2b21;',
+    ':host{all:initial;--_text:var(--lca-ink,#1f1f1c);--_soft:#5c5d57;--_bg:#ffffff;--_bot:#f2f2ee;--_line:#e4e4dc;',
+    '--_accent:var(--lca-accent,#b9f24b);--_accent-hover:#a6e035;--_accent-ink:#11110f;--_user:var(--lca-user,#3a7413);',
+    '--_focus:#2f6fed;--_warn:#8f2b21;--_ok:#3a5a10;',
     '--_font:var(--lca-font,Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif);',
-    '--_display:var(--lca-display,"Plus Jakarta Sans",var(--_font));font-family:var(--_font);color:var(--_ink);font-size:15px;line-height:1.55}',
+    'font-family:var(--_font);color:var(--_text);font-size:15px;line-height:1.5}',
     '*{box-sizing:border-box}',
     'button{font:inherit;color:inherit;cursor:pointer}',
-    ':focus-visible{outline:3px solid var(--_blue);outline-offset:2px}',
-    '@keyframes lca-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}',
-    '@keyframes lca-pop{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}',
-    '@keyframes lca-ring{0%,100%{box-shadow:0 0 0 0 rgba(185,242,75,.55)}60%{box-shadow:0 0 0 9px rgba(185,242,75,0)}}',
-    '@keyframes lca-dot{0%,80%,100%{transform:translateY(0);opacity:.4}40%{transform:translateY(-4px);opacity:1}}',
-    '.launcher{position:fixed;bottom:20px;z-index:2147483000;display:flex;align-items:center;gap:10px;padding:13px 18px 13px 15px;',
-    'border:1px solid rgba(255,255,255,.14);border-radius:999px;background:var(--_ink);color:#fff;font:700 15px/1.2 var(--_display);',
-    'box-shadow:0 14px 34px rgba(17,17,15,.28);transition:transform .18s ease;animation:lca-pop .4s ease both}',
-    '.launcher:hover{transform:translateY(-2px);box-shadow:0 0 0 4px rgba(185,242,75,.4),0 14px 34px rgba(17,17,15,.28)}',
-    '.launcher .dot{width:11px;height:11px;border-radius:50%;background:var(--_mark);animation:lca-ring 2.2s ease-in-out infinite}',
+    'a{color:inherit}',
+    ':focus-visible{outline:3px solid var(--_focus);outline-offset:2px;border-radius:8px}',
+    '.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}',
+    '@keyframes lca-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}',
+    '@keyframes lca-dot{0%,80%,100%{opacity:.35;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}',
+    /* Launcher */
+    '.launcher{position:fixed;bottom:20px;z-index:2147483000;display:flex;align-items:center;gap:10px;min-height:52px;padding:0 20px 0 16px;',
+    'border:0;border-radius:999px;background:var(--_accent);color:var(--_accent-ink);font-weight:600;font-size:15px;',
+    'box-shadow:0 8px 24px rgba(17,17,15,.18);transition:background .15s ease,box-shadow .15s ease}',
+    '.launcher:hover{background:var(--_accent-hover);box-shadow:0 0 0 4px rgba(185,242,75,.35),0 8px 24px rgba(17,17,15,.18)}',
+    '.launcher svg{width:20px;height:20px}',
     '.launcher.right{right:20px}.launcher.left{left:20px}',
     '.launcher[hidden]{display:none}',
-    '.panel{position:fixed;bottom:20px;z-index:2147483001;width:min(410px,calc(100vw - 32px));height:min(700px,calc(100vh - 40px));',
-    'display:flex;flex-direction:column;background:var(--_paper);border:1px solid var(--_line);border-radius:14px;overflow:hidden;',
-    'box-shadow:0 30px 70px rgba(17,17,15,.30);animation:lca-pop .28s ease both}',
+    /* Panel */
+    '.panel{position:fixed;bottom:20px;z-index:2147483001;width:min(400px,calc(100vw - 32px));height:min(680px,calc(100vh - 40px));',
+    'display:flex;flex-direction:column;background:var(--_bg);border:1px solid var(--_line);border-radius:16px;overflow:hidden;',
+    'box-shadow:0 24px 64px rgba(17,17,15,.18)}',
     '.panel.right{right:20px}.panel.left{left:20px}',
     '.panel[hidden]{display:none}',
-    '.panel.inline{position:relative;inset:auto;width:100%;height:100%;max-width:none;border-radius:12px;box-shadow:none;z-index:auto}',
+    '.panel.inline{position:relative;inset:auto;width:100%;height:100%;max-width:none;box-shadow:none;z-index:auto}',
     '@media (max-width:520px){.panel:not(.inline){inset:0;width:100%;height:100%;height:100dvh;border-radius:0;border:0}}',
-    '.head{display:flex;align-items:center;gap:10px;padding:14px 12px 13px 16px;background:var(--_ink);color:#fff}',
-    '.head .mark{width:30px;height:30px;flex:none;border-radius:8px;background:var(--_mark);display:grid;place-items:center;color:var(--_ink);font:800 16px/1 var(--_display)}',
-    '.head .titles{flex:1;min-width:0}',
-    '.head h2{margin:0;font:800 16px/1.2 var(--_display);letter-spacing:-.01em}',
-    '.head p{margin:3px 0 0;font-size:12.5px;color:rgba(255,255,255,.72)}',
-    '.head p b{color:var(--_mark);font-weight:700}',
-    '.iconbtn{border:0;background:transparent;color:#fff;width:36px;height:36px;border-radius:8px;display:grid;place-items:center}',
-    '.iconbtn:hover{background:rgba(255,255,255,.16)}',
-    '.head :focus-visible{outline-color:var(--_mark)}',
-    '.iconbtn svg{width:18px;height:18px}',
-    '.log{flex:1;overflow-y:auto;padding:16px 14px 8px;display:flex;flex-direction:column;gap:10px;overscroll-behavior:contain}',
-    '.log>*{flex-shrink:0;animation:lca-in .3s ease both}',
-    '.msg{max-width:92%;padding:10px 13px;border-radius:10px;white-space:pre-wrap;overflow-wrap:anywhere}',
-    '.bot{align-self:flex-start;background:var(--_surface);border:1px solid var(--_line);border-top-left-radius:3px}',
-    '.user{align-self:flex-end;background:var(--_accent);color:var(--_accent-ink);border-top-right-radius:3px}',
-    '.step{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--_muted);margin-bottom:4px;font-weight:700;letter-spacing:.02em}',
-    '.bar{flex:1;max-width:90px;height:4px;border-radius:4px;background:var(--_warm);overflow:hidden}',
-    '.bar i{display:block;height:100%;background:var(--_mark-dark);transition:width .4s ease}',
-    '.options{display:flex;flex-wrap:wrap;gap:8px;align-self:stretch}',
-    '.opt{border:1.5px solid var(--_ink);background:var(--_surface);color:var(--_ink);border-radius:999px;padding:9px 15px;font-weight:600;font-size:14px;text-align:left;transition:background .15s ease,box-shadow .15s ease,transform .15s ease}',
-    '.opt:not([disabled]):hover{background:#f1fbdc;box-shadow:0 0 0 3px rgba(185,242,75,.6);transform:translateY(-1px)}',
-    '.opt.ghost{border:1px solid var(--_line);color:var(--_muted)}',
-    '.opt.ghost:not([disabled]):hover{background:var(--_warm);color:var(--_ink);box-shadow:0 0 0 3px rgba(17,17,15,.08)}',
-    '.opt[disabled]{opacity:.35;cursor:default;background:var(--_surface);transform:none;box-shadow:none}',
-    '.opt.selected,.opt.selected[disabled]{opacity:1;background:var(--_mark);border-color:var(--_ink);color:var(--_ink)}',
-    '.opt.selected::before{content:"✓ ";font-weight:800}',
-    '.tag{display:flex;width:fit-content;align-items:center;gap:6px;margin-top:10px;padding:3px 9px;border-radius:999px;font-size:12px;font-weight:700;background:var(--_ok-bg);color:var(--_ok-ink)}',
-    '.tag.warn{background:var(--_warn-bg);color:var(--_warn-ink)}',
-    '.meta{display:block;margin-top:6px;font-size:12px;color:var(--_muted)}',
-    '.simple{display:block;margin-top:10px;border-left:3px solid var(--_mark-dark);background:#f7faef;border-radius:0 8px 8px 0;font-size:13.5px;white-space:normal}',
-    '.simple summary{cursor:pointer;padding:7px 10px;font-weight:700;color:var(--_ok-ink);list-style:none;text-decoration:underline;text-underline-offset:3px}',
-    '.simple summary:hover{text-decoration-thickness:2px}',
+    /* Header */
+    '.head{display:flex;align-items:center;gap:10px;padding:10px 8px 10px 14px;border-bottom:1px solid var(--_line)}',
+    '.avatar{width:32px;height:32px;flex:none;border-radius:50%;background:var(--_accent);color:var(--_accent-ink);display:grid;place-items:center;font-weight:700;font-size:15px}',
+    '.avatar.sm{width:26px;height:26px;font-size:13px;align-self:flex-end}',
+    '.head .name{flex:1;min-width:0;font-weight:600;font-size:15px;display:flex;align-items:center;gap:8px;white-space:nowrap}',
+    '.head .name .nm{overflow:hidden;text-overflow:ellipsis}',
+    '@media (max-width:420px){.hbtn .lbl{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}}',
+    '.tag-proto{font-weight:500;font-size:11px;color:var(--_soft);border:1px solid var(--_line);border-radius:999px;padding:1px 8px}',
+    '.hbtn{border:0;background:transparent;min-width:44px;height:44px;padding:0 10px;border-radius:10px;color:var(--_soft);font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:6px}',
+    '.hbtn:hover{background:var(--_bot);color:var(--_text)}',
+    '.hbtn svg{width:18px;height:18px}',
+    /* Messages */
+    '.log{flex:1;overflow-y:auto;padding:18px 14px 10px;display:flex;flex-direction:column;gap:12px;overscroll-behavior:contain;scroll-behavior:smooth}',
+    '.log>*{flex-shrink:0;animation:lca-in .25s ease both}',
+    '.row{display:flex;gap:8px;align-items:flex-end;max-width:100%}',
+    '.row.user{justify-content:flex-end}',
+    '.bubble{max-width:82%;padding:10px 14px;border-radius:18px;white-space:pre-wrap;overflow-wrap:anywhere}',
+    '.row.bot .bubble{background:var(--_bot);border-bottom-left-radius:6px}',
+    '.row.user .bubble{background:var(--_user);color:#fff;border-bottom-right-radius:6px}',
+    '.step{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--_soft);margin-bottom:4px}',
+    '.bar{width:72px;height:4px;border-radius:4px;background:#e2e2da;overflow:hidden}',
+    '.bar i{display:block;height:100%;background:var(--_user);transition:width .3s ease}',
+    '.under{margin:4px 0 0 34px;display:flex;flex-direction:column;align-items:flex-start;gap:8px}',
+    '.src{font-size:12px;color:var(--_soft)}',
+    '.src.warn{color:var(--_warn)}',
+    '.simple{font-size:13px;color:var(--_soft);max-width:82%}',
+    '.simple summary{cursor:pointer;text-decoration:underline;text-underline-offset:3px;min-height:28px;display:inline-flex;align-items:center}',
     '.simple summary::-webkit-details-marker{display:none}',
-    '.simple summary::before{content:"+ ";font-weight:800}',
-    '.simple[open] summary::before{content:"− "}',
-    '.simple dl{margin:0;padding:0 10px 6px}',
-    '.simple dt{font-weight:700;margin-top:6px}',
-    '.simple dd{margin:1px 0 0}',
-    '.simple small{display:block;padding:0 10px 8px;color:var(--_muted);font-size:11.5px}',
-    '.fit{align-self:stretch;max-width:100%;background:var(--_surface);border:1px solid var(--_line);border-radius:12px;overflow:hidden}',
-    '.fit:focus{outline:none}',
-    '.fit .verdict{padding:14px 14px 12px;background:var(--_ink);color:#fff;font:800 18px/1.25 var(--_display)}',
-    '.fit .verdict small{display:block;font:400 13px/1.45 var(--_font);color:rgba(255,255,255,.72);margin-top:5px}',
-    '.fit .verdict.strong .badge{background:var(--_mark)}',
-    '.fit .verdict .badge{display:inline-block;width:11px;height:11px;border-radius:50%;background:#ffd166;margin-right:9px;vertical-align:1px;animation:lca-ring 2.2s ease-in-out infinite}',
-    '.fit ul{list-style:none;margin:0;padding:4px 14px 2px}',
-    '.fit li{padding:11px 0;border-bottom:1px solid var(--_line);animation:lca-in .4s ease both}',
-    '.fit li:nth-child(2){animation-delay:.12s}.fit li:nth-child(3){animation-delay:.24s}.fit li:nth-child(4){animation-delay:.36s}.fit li:nth-child(5){animation-delay:.48s}',
-    '.fit li:last-child{border-bottom:0}',
-    '.fit li strong{display:block;font:700 15px/1.3 var(--_display);margin-bottom:3px}',
-    '.fit li.caution strong::before{content:"Plan for this: ";color:#b2382d}',
-    '.fit li.note strong::after{content:" (my guidance)";font-weight:400;color:var(--_muted);font-size:13px}',
-    '.fit li p{margin:0;font-size:14px}',
-    '.fit .simple{margin:4px 14px 12px}',
-    '.fit .foot{padding:10px 14px 12px;font-size:12.5px;color:var(--_muted);background:var(--_paper);border-top:1px solid var(--_line)}',
-    '.typing{display:inline-flex;gap:4px}',
-    '.typing i{width:7px;height:7px;border-radius:50%;background:var(--_ink);opacity:.5;animation:lca-dot 1s infinite ease-in-out}',
+    '.simple dl{margin:6px 0 0}.simple dt{font-weight:600;color:var(--_text)}.simple dd{margin:0 0 6px}',
+    '.simple small{display:block;font-size:11.5px}',
+    /* Option buttons (the 5 questions) */
+    '.options{display:flex;flex-direction:column;gap:8px;margin-left:34px;max-width:calc(100% - 34px)}',
+    '.opt{min-height:44px;padding:10px 14px;border:1px solid #cfcfc6;border-radius:12px;background:#fff;text-align:left;font-size:15px;transition:background .15s ease,border-color .15s ease,box-shadow .15s ease}',
+    '.opt:not([disabled]):hover{border-color:var(--_text);box-shadow:0 0 0 3px rgba(185,242,75,.45)}',
+    '.opt[disabled]{cursor:default;opacity:.45}',
+    '.opt.selected,.opt.selected[disabled]{opacity:1;background:var(--_accent);border-color:var(--_accent);color:var(--_accent-ink);font-weight:600}',
+    '.opt.selected::before{content:"✓ "}',
+    /* Chips (starters and follow-ups) */
+    '.chips{display:flex;flex-wrap:wrap;gap:8px;margin-left:34px}',
+    '.chips-label{font-size:12px;color:var(--_soft);margin:2px 0 -4px 34px}',
+    '.chip{min-height:40px;padding:8px 14px;border:1px solid #cfcfc6;border-radius:999px;background:#fff;font-size:14px;transition:background .15s ease,border-color .15s ease,box-shadow .15s ease}',
+    '.chip:hover{border-color:var(--_text);box-shadow:0 0 0 3px rgba(185,242,75,.45)}',
+    '.chip.main{background:var(--_accent);border-color:var(--_accent);color:var(--_accent-ink);font-weight:600}',
+    '.chip.main:hover{background:var(--_accent-hover)}',
+    '.chip[disabled]{opacity:.45;cursor:default;box-shadow:none}',
+    /* Result card */
+    '.card{margin-left:34px;border:1px solid var(--_line);border-radius:16px;padding:16px;background:#fff}',
+    '.card:focus{outline:none}',
+    '.verdict{font-weight:700;font-size:17px;line-height:1.3;margin:0 0 10px}',
+    '.card ul{margin:0 0 12px;padding:0;list-style:none}',
+    '.card li{padding:6px 0;border-top:1px solid var(--_line)}',
+    '.card li:first-child{border-top:0}',
+    '.card li details summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:8px;align-items:center;min-height:32px;font-weight:500}',
+    '.card li details summary::-webkit-details-marker{display:none}',
+    '.card li details summary::after{content:"+";color:var(--_soft);font-weight:400;font-size:18px}',
+    '.card li details[open] summary::after{content:"−"}',
+    '.card li p{margin:4px 0 6px;font-size:14px;color:var(--_soft)}',
+    '.card li.caution summary span::before{content:"Plan for this: ";color:var(--_warn);font-weight:600}',
+    '.actions{display:flex;flex-direction:column;gap:8px;margin-top:4px}',
+    '.btn{display:flex;align-items:center;justify-content:center;min-height:44px;padding:0 16px;border-radius:12px;font-weight:600;font-size:14.5px;text-decoration:none;text-align:center;transition:background .15s ease,box-shadow .15s ease}',
+    '.btn.primary{background:var(--_accent);color:var(--_accent-ink)}',
+    '.btn.primary:hover{background:var(--_accent-hover);box-shadow:0 0 0 3px rgba(185,242,75,.4)}',
+    '.btn.secondary{border:1px solid #cfcfc6;color:var(--_text);background:#fff}',
+    '.btn.secondary:hover{border-color:var(--_text);background:var(--_bot)}',
+    '.btn:active{transform:translateY(1px)}',
+    /* Typing */
+    '.typing{display:inline-flex;gap:4px;padding:4px 2px}',
+    '.typing i{width:7px;height:7px;border-radius:50%;background:var(--_soft);animation:lca-dot 1s infinite ease-in-out}',
     '.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}',
-    '.compose{display:flex;gap:8px;padding:10px 12px 8px;border-top:1px solid var(--_line);background:var(--_surface)}',
+    /* Composer */
+    '.compose{display:flex;gap:8px;align-items:center;padding:10px 12px;border-top:1px solid var(--_line);background:#fff}',
     '.compose label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}',
-    '.compose input{flex:1;min-width:0;border:1px solid var(--_line);border-radius:6px;padding:11px 12px;font:inherit;color:var(--_ink);background:#fff}',
-    '.compose input:focus{border-color:var(--_ink);outline:none;box-shadow:0 0 0 3px rgba(185,242,75,.6)}',
-    '.send{border:0;border-radius:6px;padding:0 16px;background:var(--_accent);color:var(--_accent-ink);font-weight:700}',
+    '.compose input{flex:1;min-width:0;min-height:44px;border:1px solid #cfcfc6;border-radius:22px;padding:0 16px;font:inherit;color:var(--_text);background:#fff}',
+    '.compose input:focus{outline:none;border-color:var(--_text);box-shadow:0 0 0 3px rgba(47,111,237,.25)}',
+    '.send{flex:none;width:44px;height:44px;border:0;border-radius:50%;background:var(--_accent);color:var(--_accent-ink);display:grid;place-items:center;transition:background .15s ease}',
+    '.send:hover:not([disabled]){background:var(--_accent-hover)}',
     '.send[disabled]{opacity:.5;cursor:default}',
-    '.send:not([disabled]):hover{background:#2c2c27;box-shadow:0 0 0 3px rgba(17,17,15,.15)}',
-    '.next{display:flex;gap:8px;padding:0 12px 8px;background:var(--_surface)}',
-    '.cta{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;gap:6px;min-height:44px;padding:8px;border-radius:6px;font-weight:700;font-size:13.5px;text-decoration:none;line-height:1.2;transition:transform .18s ease}',
-    '.cta:hover{transform:translateY(-1px)}',
-    '.cta.primary:hover{background:#a8e33a;box-shadow:0 0 0 3px rgba(185,242,75,.45)}',
-    '.cta.secondary:hover{background:var(--_paper);box-shadow:0 0 0 3px rgba(17,17,15,.08)}',
-    '.next.quiet .cta{min-height:36px;font-size:12.5px;font-weight:600}',
-    '.next.quiet .cta.primary{background:transparent;border:1px solid var(--_line);color:var(--_ink)}',
-    '.next.quiet .cta.secondary{border-color:var(--_line);color:var(--_muted)}',
-    '.cta.primary{background:var(--_mark);color:var(--_ink)}',
-    '.cta.secondary{border:1px solid var(--_ink);color:var(--_ink);background:transparent}',
-    '.legal{margin:0;padding:0 12px 10px;font-size:11.5px;color:var(--_muted);background:var(--_surface);padding-bottom:max(10px,env(safe-area-inset-bottom))}',
-    '@media (prefers-reduced-motion:reduce){*,*::before{animation:none!important;transition:none!important}.launcher:hover,.opt:hover,.cta:hover{transform:none}}',
+    '.send svg{width:20px;height:20px}',
+    '.foot{margin:0;padding:0 14px 10px;font-size:11.5px;color:var(--_soft);background:#fff;padding-bottom:max(10px,env(safe-area-inset-bottom))}',
+    '.foot a{text-underline-offset:2px}',
+    '@media (prefers-reduced-motion:reduce){*,*::before{animation:none!important;transition:none!important}.log{scroll-behavior:auto}}',
   ].join('');
 
   var ICON_CLOSE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.3 5.7a1 1 0 0 0-1.4 0L12 10.6 7.1 5.7a1 1 0 0 0-1.4 1.4l4.9 4.9-4.9 4.9a1 1 0 1 0 1.4 1.4l4.9-4.9 4.9 4.9a1 1 0 0 0 1.4-1.4L13.4 12l4.9-4.9a1 1 0 0 0 0-1.4z"/></svg>';
   var ICON_RESTART = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 5V2L7 6l5 4V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7z"/></svg>';
+  var ICON_SEND = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3.4 20.4 21 12 3.4 3.6l.1 6.5L15 12 3.5 13.9z"/></svg>';
+  var ICON_CHAT = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 4h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-5 4v-4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg>';
 
   // ---------- state ----------
   var state;
@@ -187,39 +194,38 @@
     return node;
   }
 
+  function links() {
+    return (state.config && state.config.links) || FALLBACK_LINKS;
+  }
+
+  function whatsappHref() {
+    var text = 'Hi, I have a question about the AI Product Engineering course.';
+    if (state.profileSummary) text += '\nAbout me: ' + state.profileSummary;
+    if (state.lastUnverified) text += '\nMy question: ' + state.lastUnverified;
+    return links().whatsapp + '?text=' + encodeURIComponent(text);
+  }
+
   var launcher = el('button', {
     class: 'launcher ' + POSITION,
     type: 'button',
     'aria-haspopup': 'dialog',
     'aria-expanded': 'false',
     onclick: function () { open('launcher'); },
-  }, [el('span', { class: 'dot', 'aria-hidden': 'true' }), el('span', { text: opt.label || 'Is this course right for me?' })]);
+  }, [el('span', { html: ICON_CHAT }), el('span', { text: opt.label || 'Is this course right for me?' })]);
 
-  var log = el('div', { class: 'log', role: 'log', 'aria-live': 'polite', 'aria-relevant': 'additions', 'aria-label': 'Conversation' });
-  var input = el('input', {
-    id: 'lca-input',
-    type: 'text',
-    maxlength: String(MAX_LEN),
-    autocomplete: 'off',
-    placeholder: 'Ask anything about the course…',
-    enterkeyhint: 'send',
-  });
-  var sendBtn = el('button', { class: 'send', type: 'submit' }, ['Send']);
+  var log = el('div', { class: 'log', role: 'log', 'aria-live': 'polite', 'aria-label': 'Conversation' });
+  var input = el('input', { id: 'lca-input', type: 'text', maxlength: String(MAX_LEN), autocomplete: 'off', placeholder: 'Type your question…', enterkeyhint: 'send' });
+  var sendBtn = el('button', { class: 'send', type: 'submit', 'aria-label': 'Send', html: ICON_SEND });
   var form = el('form', { class: 'compose', onsubmit: onSubmit }, [el('label', { for: 'lca-input', text: 'Your question' }), input, sendBtn]);
-  var courseLink = el('a', { class: 'cta primary', target: '_blank', rel: 'noopener', href: FALLBACK_LINKS.course, onclick: function () { track('cta_course', { where: state.phase }); } }, ['View course & price ↗']);
-  var waLink = el('a', { class: 'cta secondary', target: '_blank', rel: 'noopener', href: FALLBACK_LINKS.whatsapp, onclick: function () { track('cta_whatsapp', { where: state.phase }); } }, ['Ask the team on WhatsApp ↗']);
-  var next = el('div', { class: 'next quiet' }, [courseLink, waLink]); // quiet until there is a result
-  var legal = el('p', { class: 'legal', text: 'Prototype by Himanshu Bartwal for the Lapaas internship assignment. Not an official Lapaas page. Please don’t share personal details.' });
+  var courseFootLink = el('a', { href: FALLBACK_LINKS.course, target: '_blank', rel: 'noopener', onclick: function () { track('cta_course', { where: 'footer' }); } }, ['View course ↗']);
+  var foot = el('p', { class: 'foot' }, ['Prototype by Himanshu Bartwal, not an official Lapaas page. Please don’t share personal details. ', courseFootLink]);
 
-  var headTitleId = 'lca-title';
-  var closeBtn = INLINE ? null : el('button', { class: 'iconbtn', type: 'button', 'aria-label': 'Close assistant', html: ICON_CLOSE, onclick: function () { close(); } });
-  var restartBtn = el('button', { class: 'iconbtn', type: 'button', 'aria-label': 'Start over', title: 'Start over', html: ICON_RESTART, onclick: function () { restart(); } });
+  var titleId = 'lca-title';
+  var restartBtn = el('button', { class: 'hbtn', type: 'button', title: 'Start over', onclick: function () { restart(); } }, [el('span', { html: ICON_RESTART }), el('span', { class: 'lbl', text: 'Start over' })]);
+  var closeBtn = INLINE ? null : el('button', { class: 'hbtn', type: 'button', 'aria-label': 'Close', html: ICON_CLOSE, onclick: function () { close(); } });
   var head = el('div', { class: 'head' }, [
-    el('div', { class: 'mark', 'aria-hidden': 'true', text: '?' }),
-    el('div', { class: 'titles' }, [
-      el('h2', { id: headTitleId, text: 'Is this course right for me?' }),
-      el('p', { html: 'Honest answers, <b>only from the official course page</b>' }),
-    ]),
+    el('div', { class: 'avatar', 'aria-hidden': 'true', text: '?' }),
+    el('div', { class: 'name', id: titleId }, [el('span', { class: 'nm', text: 'Lapaas course assistant' }), el('span', { class: 'tag-proto', text: 'Prototype' })]),
     restartBtn,
     closeBtn,
   ]);
@@ -228,47 +234,23 @@
     class: 'panel ' + (INLINE ? 'inline' : POSITION),
     role: INLINE ? 'region' : 'dialog',
     'aria-modal': INLINE ? null : 'false',
-    'aria-labelledby': headTitleId,
+    'aria-labelledby': titleId,
     hidden: INLINE ? null : true,
-  }, [head, log, form, next, legal]);
+  }, [head, log, form, foot]);
 
   if (!INLINE) root.appendChild(launcher);
   root.appendChild(panel);
 
   // ---------- helpers ----------
-  function scrollDown() {
-    log.scrollTop = log.scrollHeight;
-  }
-
-  function add(node) {
-    log.appendChild(node);
-    scrollDown();
-    return node;
-  }
-
-  function botText(text, extra) {
-    return add(el('div', { class: 'msg bot' }, [text].concat(extra || [])));
-  }
-
-  function userText(text) {
-    return add(el('div', { class: 'msg user', text: text }));
-  }
-
-  function typing() {
-    return add(el('div', { class: 'msg bot', 'aria-label': 'Assistant is typing' }, [el('span', { class: 'typing', 'aria-hidden': 'true', html: '<i></i><i></i><i></i>' })]));
-  }
-
-  function setBusy(b) {
-    state.busy = b;
-    sendBtn.disabled = b;
-  }
+  function scrollDown() { log.scrollTop = log.scrollHeight; }
+  function add(node) { log.appendChild(node); scrollDown(); return node; }
 
   function track(event, data) {
     try {
       var body = JSON.stringify({ event: event, data: data || {} });
       if (navigator.sendBeacon) navigator.sendBeacon(EVENT_API, new Blob([body], { type: 'text/plain' }));
       else fetch(EVENT_API, { method: 'POST', body: body, keepalive: true, headers: { 'content-type': 'text/plain' } });
-    } catch (e) { /* analytics must never break the chat */ }
+    } catch (e) { /* never break the chat */ }
   }
 
   function api(body) {
@@ -284,43 +266,61 @@
     if (state.config) return Promise.resolve(state.config);
     return fetch(API).then(function (r) { return r.json(); }).then(function (cfg) {
       state.config = cfg;
-      if (cfg.links) {
-        courseLink.href = cfg.links.course || FALLBACK_LINKS.course;
-      }
-      updateWhatsApp();
+      courseFootLink.href = links().course;
       return cfg;
     });
   }
 
-  function updateWhatsApp() {
-    var links = (state.config && state.config.links) || FALLBACK_LINKS;
-    var text = 'Hi, I have a question about the AI Product Engineering course.';
-    if (state.profileSummary) text += '\nAbout me: ' + state.profileSummary;
-    if (state.lastUnverified) text += '\nMy question: ' + state.lastUnverified;
-    waLink.href = links.whatsapp + '?text=' + encodeURIComponent(text);
+  function setBusy(b) { state.busy = b; sendBtn.disabled = b; }
+
+  function userSays(text) {
+    return add(el('div', { class: 'row user' }, [el('div', { class: 'bubble', text: text })]));
   }
 
-  function disableOptions(container) {
-    var btns = container.querySelectorAll('button');
-    for (var i = 0; i < btns.length; i++) btns[i].disabled = true;
+  function botRow(children) {
+    return add(el('div', { class: 'row bot' }, [el('div', { class: 'avatar sm', 'aria-hidden': 'true', text: '?' }), el('div', { class: 'bubble' }, children)]));
   }
 
-  function optionRow(items, onPick, extraClass) {
-    var row = el('div', { class: 'options', role: 'group' });
-    items.forEach(function (it) {
-      row.appendChild(el('button', {
-        class: 'opt' + (it.ghost ? ' ghost' : '') + (extraClass ? ' ' + extraClass : ''),
-        type: 'button',
-        onclick: function (e) {
-          if (state.busy) return;
-          e.currentTarget.classList.add('selected');
-          e.currentTarget.setAttribute('aria-pressed', 'true');
-          disableOptions(row);
-          onPick(it);
-        },
-      }, [it.label]));
-    });
-    return add(row);
+  function typing() {
+    return botRow([el('span', { class: 'typing', 'aria-label': 'Assistant is typing', html: '<i></i><i></i><i></i>' })]);
+  }
+
+  // Bot text appears word by word (skipped when reduced motion is on).
+  // Screen readers get the full text at once via a hidden copy.
+  function botSays(text, done) {
+    var visible = el('span', { 'aria-hidden': 'true' });
+    var row = botRow([el('span', { class: 'sr', text: text }), visible]);
+    var words = String(text).split(/(\s+)/);
+    if (REDUCED || words.length < 3) {
+      visible.textContent = text;
+      scrollDown();
+      if (done) done(row);
+      return row;
+    }
+    var i = 0;
+    var perTick = Math.max(1, Math.ceil(words.length / 60));
+    var timer = setInterval(function () {
+      i += perTick * 2;
+      visible.textContent = words.slice(0, i).join('');
+      scrollDown();
+      if (i >= words.length) {
+        clearInterval(timer);
+        visible.textContent = text;
+        if (done) done(row);
+      }
+    }, 28);
+    return row;
+  }
+
+  // Answered choices leave the chat (the visitor's pick is shown as their own bubble).
+  function clearChoices() {
+    var nodes = log.querySelectorAll('.chips, .chips-label, .options');
+    for (var i = 0; i < nodes.length; i++) nodes[i].parentNode.removeChild(nodes[i]);
+  }
+
+  function disableAll(selector) {
+    var nodes = log.querySelectorAll(selector);
+    for (var i = 0; i < nodes.length; i++) nodes[i].disabled = true;
   }
 
   function focusFirst(container) {
@@ -328,52 +328,78 @@
     (b || input).focus({ preventScroll: true });
   }
 
-  // ---------- flow ----------
+  function chipRow(chips, onPick, label) {
+    if (!chips.length) return null;
+    if (label) add(el('div', { class: 'chips-label', text: label }));
+    var row = el('div', { class: 'chips', role: 'group' });
+    chips.forEach(function (c) {
+      row.appendChild(el('button', {
+        class: 'chip' + (c.main ? ' main' : ''),
+        type: 'button',
+        onclick: function () { if (state.busy) return; clearChoices(); onPick(c); },
+      }, [c.label]));
+    });
+    return add(row);
+  }
+
+  // ---------- welcome ----------
+  var STARTERS = [
+    { id: 'start', label: 'Find out if it suits me (5 questions)', main: true },
+    { id: 'what-is', label: 'Tell me about the course' },
+    { id: 'price-and-emi', label: 'What’s the price?' },
+    { id: 'coding-needed', label: 'Do I need coding?' },
+  ];
+
   function welcome() {
-    botText('Hi! 👋 Not sure if the Lapaas AI Product Engineering course is right for you? I can help.\n\nAnswer 5 quick questions (just tap) and I’ll tell you honestly if it suits you. Or ask me anything. I only use facts from the official course page, and I’ll tell you clearly when something isn’t written there.');
-    var row = optionRow(
-      [{ id: 'start', label: 'Check in 1 minute' }, { id: 'skip', label: 'I just have a question', ghost: true }],
-      function (it) {
-        if (it.id === 'start') {
-          userText('Check in 1 minute');
+    botSays('Hi! I can help you decide if this course fits you. Pick an option or type your question.', function () {
+      var row = chipRow(STARTERS, function (c) {
+        if (c.id === 'start') {
+          userSays('Find out if it suits me');
           track('intake_start');
           state.phase = 'intake';
-          focusFirst(askIntake());
+          askIntake();
         } else {
-          userText('I just have a question');
-          track('intake_skip');
-          state.phase = 'chat';
-          showSuggestions(defaultChips(), 'Here are some common questions. Tap one, or type your own:');
+          if (state.phase === 'welcome') state.phase = 'chat';
+          askChip(c);
         }
-      },
-    );
-    return row;
+      });
+      if (!INLINE || opt.open === 'true') focusFirst(row);
+    });
   }
 
-  function defaultChips() {
-    return (state.config && state.config.default_chips) || [];
-  }
-
+  // ---------- the 5 questions ----------
   function askIntake() {
-    disableOptions(log); // only the current question's buttons stay active
+    disableAll('.opt');
     var q = state.config.intake[state.qIndex];
     var total = state.config.intake.length;
     var from = Math.round((state.qIndex / total) * 100);
     var to = Math.round(((state.qIndex + 1) / total) * 100);
     var bar = el('span', { class: 'bar', 'aria-hidden': 'true' }, [el('i', { style: 'width:' + from + '%' })]);
-    botText('', [el('span', { class: 'step' }, ['Question ' + (state.qIndex + 1) + ' of ' + total, bar]), q.question]);
+    botRow([el('span', { class: 'step' }, ['Question ' + (state.qIndex + 1) + ' of ' + total, bar]), q.question]);
     setTimeout(function () { bar.firstChild.style.width = to + '%'; }, 60);
-    var row = optionRow(q.options, function (o) {
-      userText(o.label);
-      state.profile[q.key] = o.id;
-      state.qIndex += 1;
-      if (state.qIndex < state.config.intake.length) {
-        focusFirst(askIntake());
-      } else {
-        finishIntake();
-      }
+    var row = el('div', { class: 'options', role: 'group', 'aria-label': q.question });
+    q.options.forEach(function (o) {
+      row.appendChild(el('button', {
+        class: 'opt',
+        type: 'button',
+        onclick: function (e) {
+          if (state.busy) return;
+          e.currentTarget.classList.add('selected');
+          e.currentTarget.setAttribute('aria-pressed', 'true');
+          disableAll('.opt');
+          state.profile[q.key] = o.id;
+          state.qIndex += 1;
+          setTimeout(function () {
+            clearChoices();
+            userSays(o.label);
+            if (state.qIndex < total) askIntake();
+            else finishIntake();
+          }, REDUCED ? 0 : 220);
+        },
+      }, [o.label]));
     });
-    return row;
+    add(row);
+    focusFirst(row);
   }
 
   function finishIntake() {
@@ -384,68 +410,52 @@
       .then(function (fit) {
         t.remove();
         state.profileSummary = fit.profile_summary || '';
-        updateWhatsApp();
-        var card = renderFit(fit);
-        next.classList.remove('quiet');
+        var card = renderResult(fit);
         track('intake_complete', { verdict: fit.verdict && fit.verdict.level, role: state.profile.role, goal: state.profile.goal });
-        showSuggestions(fit.chips || [], 'Questions people like you often ask. Tap one, or type your own:');
-        log.scrollTop = card.offsetTop - log.offsetTop - 12; // show the summary from its top
+        state.suggestions = fit.chips || [];
+        followUps([]);
+        log.scrollTop = card.offsetTop - log.offsetTop - 12;
         card.focus({ preventScroll: true });
       })
-      .catch(function () {
-        t.remove();
-        failMessage();
-      })
+      .catch(function () { t.remove(); failMessage(); })
       .then(function () { setBusy(false); });
   }
 
-  function renderFit(fit) {
+  function renderResult(fit) {
     var list = el('ul');
     (fit.points || []).forEach(function (p) {
-      list.appendChild(el('li', { class: p.kind || 'point' }, [el('strong', { text: p.title }), el('p', { text: p.text })]));
+      list.appendChild(el('li', { class: p.kind || 'point' }, [
+        el('details', null, [el('summary', null, [el('span', { text: p.title })]), el('p', { text: p.text })]),
+      ]));
     });
-    return add(el('div', { class: 'fit', role: 'group', tabindex: '-1', 'aria-label': 'Your result' }, [
-      el('div', { class: 'verdict ' + ((fit.verdict && fit.verdict.level) || '') }, [
-        el('span', { class: 'badge', 'aria-hidden': 'true' }),
-        (fit.verdict && fit.verdict.label) || 'Your result',
-        el('small', { text: fit.intro || '' }),
-      ]),
+    var simple = simpleBox(fit.simple);
+    var card = el('div', { class: 'card', role: 'group', tabindex: '-1', 'aria-label': 'Your result' }, [
+      el('p', { class: 'verdict', text: (fit.verdict && fit.verdict.label) || 'Your result' }),
       list,
-      simpleBox(fit.simple),
-      el('div', { class: 'foot', text: 'Quotes are from the official course page (checked ' + ((state.config && state.config.kb_checked) || '') + '). This is guidance, not a promise of results.' }),
-    ]));
+      el('p', { class: 'src', text: '✓ From the official course page · tap a point for details' }),
+      simple,
+      el('div', { class: 'actions' }, [
+        el('a', { class: 'btn primary', href: links().course, target: '_blank', rel: 'noopener', onclick: function () { track('cta_course', { where: 'result' }); } }, ['View course & price ↗']),
+        el('a', { class: 'btn secondary', href: whatsappHref(), target: '_blank', rel: 'noopener', onclick: function () { track('cta_whatsapp', { where: 'result' }); } }, ['Ask the Lapaas team on WhatsApp ↗']),
+      ]),
+    ]);
+    return add(card);
   }
 
-  function showSuggestions(chips, lead) {
-    state.suggestions = chips.slice();
-    var remaining = chips.filter(function (c) { return c && !state.asked[c.id]; }).slice(0, 4);
-    if (!remaining.length) return null;
-    if (lead) botText(lead);
-    var row = optionRow(remaining, function (c) { askChip(c); });
-    return row;
-  }
-
+  // ---------- answers ----------
   function askChip(chip) {
     state.asked[chip.id] = true;
-    userText(chip.label);
+    userSays(chip.label);
     setBusy(true);
     var t = typing();
     track('chip', { id: chip.id });
     api({ type: 'faq', id: chip.id })
-      .then(function (ans) {
-        t.remove();
-        renderAnswer(ans, chip.label);
-        followUps(ans);
-      })
-      .catch(function () {
-        t.remove();
-        failMessage();
-      })
-      .then(function () { setBusy(false); });
+      .then(function (ans) { t.remove(); renderAnswer(ans, chip.label, function () { followUps(ans.related || []); setBusy(false); }); })
+      .catch(function () { t.remove(); failMessage(); setBusy(false); });
   }
 
   function askFree(text) {
-    userText(text);
+    userSays(text);
     setBusy(true);
     var t = typing();
     var body = { type: 'ask', message: text, history: state.history.slice(-6) };
@@ -455,46 +465,23 @@
         t.remove();
         state.history.push({ role: 'user', text: text }, { role: 'assistant', text: ans.answer || '' });
         track('ask', { mode: ans.mode, status: ans.status });
-        renderAnswer(ans, text);
-        if (state.phase === 'intake') {
-          botText('Let’s continue with your 5 questions.');
-          focusFirst(askIntake());
-        } else {
-          followUps(ans);
-        }
+        renderAnswer(ans, text, function () {
+          setBusy(false);
+          if (state.phase === 'intake') {
+            botSays('Let’s continue with your 5 questions.', function () { clearChoices(); askIntake(); });
+          } else {
+            followUps(ans.related || []);
+          }
+        });
       })
       .catch(function (err) {
         t.remove();
         failMessage(err && err.message === 'empty_message' ? 'Please type a question first.' : null);
-      })
-      .then(function () { setBusy(false); });
+        setBusy(false);
+      });
   }
 
-  function sourceLine(ans) {
-    var nodes = [];
-    var unverified = ans.status === 'not_stated' || ans.status === 'not_in_kb';
-    if (ans.status === 'off_topic') return nodes;
-    if (unverified) {
-      var warn = ans.status === 'not_in_kb' ? '⚠ Can’t verify from the official page'
-        : ans.partial ? '⚠ Part of this isn’t stated on the official page'
-        : '⚠ Not stated on the official page';
-      nodes.push(el('span', { class: 'tag warn', text: warn }));
-    } else if (ans.mode === 'ai') {
-      nodes.push(el('span', { class: 'tag', text: '✓ AI answer, checked against the official page' }));
-    } else {
-      nodes.push(el('span', { class: 'tag', text: '✓ From the official course page' }));
-    }
-    var srcs = (ans.sources || []).map(function (s) { return s.question; });
-    var metaText = [];
-    if (srcs.length) metaText.push('Source: ' + srcs.join(' · '));
-    if (ans.mode === 'fallback' && !unverified) metaText.push('AI is offline, so this is the verified FAQ answer.');
-    if (ans.mode === 'guard') metaText.push('An AI draft failed the fact check, so you see the verified answer instead.');
-    if (unverified) metaText.push('Tap “Ask the team on WhatsApp” below and your question is pre-filled.');
-    if (metaText.length) nodes.push(el('span', { class: 'meta', text: metaText.join(' ') }));
-    return nodes;
-  }
-
-  // Plain meanings for jargon in an answer. General meanings, not course facts.
+  // Plain meanings for jargon (general meanings, not course facts).
   function simpleBox(terms) {
     if (!terms || !terms.length) return null;
     var dl = el('dl');
@@ -503,40 +490,45 @@
       dl.appendChild(el('dd', { text: t.simple }));
     });
     var label = (state.config && state.config.simple_label) || 'Simple words (general meanings, not from the course page)';
-    return el('details', { class: 'simple' }, [
-      el('summary', { text: 'Confusing words? Tap for simple meanings (' + terms.length + ')' }),
-      dl,
-      el('small', { text: label }),
-    ]);
+    return el('details', { class: 'simple' }, [el('summary', { text: 'Confusing words? See simple meanings' }), dl, el('small', { text: label })]);
   }
 
-  function renderAnswer(ans, question) {
-    if (ans.status === 'not_stated' || ans.status === 'not_in_kb') {
-      state.lastUnverified = String(question).slice(0, 200);
-      updateWhatsApp();
-    }
-    botText(ans.answer || '', sourceLine(ans).concat([simpleBox(ans.simple)]));
-    next.classList.remove('quiet');
+  function renderAnswer(ans, question, done) {
+    var unverified = ans.status === 'not_stated' || ans.status === 'not_in_kb';
+    if (unverified) state.lastUnverified = String(question).slice(0, 200);
+    botSays(ans.answer || '', function () {
+      var under = el('div', { class: 'under' });
+      if (ans.status !== 'off_topic') {
+        under.appendChild(el('span', {
+          class: 'src' + (unverified ? ' warn' : ''),
+          text: unverified
+            ? (ans.partial ? 'Part of this isn’t on the official course page' : 'Not on the official course page')
+            : '✓ From the official course page',
+        }));
+      }
+      if (unverified) {
+        under.appendChild(el('a', { class: 'btn secondary', href: whatsappHref(), target: '_blank', rel: 'noopener', onclick: function () { track('cta_whatsapp', { where: 'answer' }); } }, ['Ask the Lapaas team on WhatsApp ↗']));
+      }
+      var simple = simpleBox(ans.simple);
+      if (simple) under.appendChild(simple);
+      if (under.childNodes.length) add(under);
+      if (done) done();
+    });
   }
 
-  function followUps(ans) {
-    var pool = (ans.related || []).concat(state.suggestions);
+  function followUps(related) {
+    var pool = (related || []).concat(state.suggestions);
     var seen = {};
     var chips = pool.filter(function (c) {
       if (!c || seen[c.id] || state.asked[c.id]) return false;
       seen[c.id] = true;
       return true;
-    });
-    if (chips.length) {
-      var row = optionRow(chips.slice(0, 4), function (c) { askChip(c); });
-      state.suggestions = chips;
-      return row;
-    }
-    return null;
+    }).slice(0, 3);
+    chipRow(chips, function (c) { askChip(c); }, chips.length ? 'You might also ask:' : null);
   }
 
   function failMessage(text) {
-    botText(text || 'Sorry, I couldn’t reach the assistant just now. You can still view the official course page or ask the Lapaas team on WhatsApp using the buttons below.');
+    botSays(text || 'Sorry, I couldn’t reach the assistant just now. You can still view the course page or ask the Lapaas team on WhatsApp.');
   }
 
   function onSubmit(e) {
@@ -545,6 +537,7 @@
     if (!text || state.busy) return;
     input.value = '';
     if (state.phase === 'welcome') state.phase = 'chat';
+    if (state.phase !== 'intake') clearChoices();
     askFree(text);
   }
 
@@ -555,22 +548,11 @@
   function start() {
     if (started) return;
     started = true;
-    loadConfig()
-      .then(function () {
-        var row = welcome();
-        if (!INLINE || opt.open === 'true') focusFirst(row);
-      })
-      .catch(function () {
-        started = false;
-        failMessage();
-      });
+    loadConfig().then(welcome).catch(function () { started = false; failMessage(); });
   }
 
   function open(source) {
-    if (INLINE) {
-      start();
-      return;
-    }
+    if (INLINE) { start(); return; }
     if (!panel.hidden) return;
     lastFocus = document.activeElement;
     panel.hidden = false;
@@ -578,7 +560,7 @@
     launcher.setAttribute('aria-expanded', 'true');
     track('open', { where: source || 'api' });
     if (!started) start();
-    else focusFirst(log.lastElementChild && log.lastElementChild.classList.contains('options') ? log.lastElementChild : null);
+    else focusFirst(log.querySelector('.options:last-of-type, .chips:last-of-type'));
   }
 
   function close() {
@@ -594,17 +576,13 @@
   function restart() {
     state = freshState();
     log.innerHTML = '';
-    next.classList.add('quiet');
-    updateWhatsApp();
+    setBusy(false);
     started = false;
     start();
   }
 
   root.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && !INLINE) {
-      e.stopPropagation();
-      close();
-    }
+    if (e.key === 'Escape' && !INLINE) { e.stopPropagation(); close(); }
   });
 
   function mount() {
