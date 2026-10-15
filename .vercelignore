@@ -1,0 +1,7 @@
+# Never upload secrets or working files to Vercel
+.env
+.env.*
+!.env.example
+_checklist.md
+tests/output/
+.vercel/

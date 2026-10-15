@@ -1,0 +1,15 @@
+# Secrets: never commit
+.env
+.env.*
+!.env.example
+
+node_modules/
+.vercel/
+tests/output/
+.DS_Store
+
+# Working notes (not part of the submission)
+_checklist.md
+
+# Local tool config
+.claude/

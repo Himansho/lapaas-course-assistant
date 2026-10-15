@@ -1,0 +1,18 @@
+{
+  "name": "lapaas-course-assistant",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Is this course right for me? An honest, embeddable course-discovery assistant for the Lapaas AI Product Engineering course (internship prototype, not an official Lapaas product).",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "node --env-file-if-exists=.env dev-server.js",
+    "test": "node --test \"tests/*.test.js\"",
+    "scenarios": "node --env-file-if-exists=.env tests/scenarios.js",
+    "kb:doc": "node scripts/build-kb-doc.js"
+  },
+  "author": "Himanshu Bartwal",
+  "license": "MIT"
+}

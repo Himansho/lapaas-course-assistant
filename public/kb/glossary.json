@@ -1,0 +1,37 @@
+{
+  "meta": {
+    "name": "Simple words: plain meanings of technical terms",
+    "note": "General meanings written by Himanshu Bartwal to help students and freshers. These are NOT course facts and make no claim about what the course includes. The assistant shows them under answers that use these words.",
+    "label": "Simple words (general meanings, not from the course page)"
+  },
+  "terms": [
+    { "term": "RAG", "match": ["RAG"], "simple": "Making AI answer from your own documents or data, so it doesn’t have to guess." },
+    { "term": "MCP", "match": ["MCP"], "simple": "A standard way to plug AI into other apps and tools (like WhatsApp or a database) so it can use them." },
+    { "term": "MVP", "match": ["MVP", "MVPs"], "simple": "Minimum Viable Product: the smallest working version of an app that real people can try." },
+    { "term": "PRD / product brief", "match": ["PRD", "PRDs", "product brief"], "simple": "A short plan that says who the product is for, what problem it solves and what it will do." },
+    { "term": "Prototype", "match": ["prototype", "prototypes"], "simple": "A rough first version you can click through to test an idea." },
+    { "term": "AI agents", "match": ["agent", "agents", "agentic"], "simple": "AI that can do steps by itself, like searching, filling forms or using tools, while a person keeps an eye on it." },
+    { "term": "Automation", "match": ["automation", "automations", "automate"], "simple": "Making software do repeated work for you, like sending a daily report." },
+    { "term": "Full-stack", "match": ["full-stack", "full stack"], "simple": "Building both the part people see (the screens) and the part behind it (the server and database)." },
+    { "term": "API", "match": ["API", "APIs"], "simple": "A way for one app to talk to another app and share data." },
+    { "term": "Deploy", "match": ["deploy", "deployed", "deployment", "deployable"], "simple": "Putting your app on the internet so anyone can open it with a link." },
+    { "term": "Multimodal", "match": ["multimodal"], "simple": "AI that works with images, video, audio and voice, not only text." },
+    { "term": "Workflow", "match": ["workflow", "workflows"], "simple": "A set of steps that gets a task done, one after another." },
+    { "term": "Grounded", "match": ["grounded"], "simple": "An AI answer based on real, checked information instead of guesses." },
+    { "term": "Data-backed", "match": ["data-backed"], "simple": "The app saves and uses real data, for example in a database." },
+    { "term": "Embeddings / vectors", "match": ["embeddings", "vectors"], "simple": "A way to turn text into lists of numbers so AI can quickly find things with a similar meaning." },
+    { "term": "Evals", "match": ["evals", "evaluation"], "simple": "Tests that check whether an AI’s answers are good enough." },
+    { "term": "Tokens", "match": ["tokens"], "simple": "Small pieces of text that AI reads and writes. AI usage is often priced by tokens." },
+    { "term": "Context", "match": ["context"], "simple": "The information you give the AI along with your question, so it can answer well." },
+    { "term": "Vibe coding", "match": ["vibe coding"], "simple": "Building software by describing what you want to an AI coding tool." },
+    { "term": "Portfolio", "match": ["portfolio"], "simple": "A collection of your work that you can show to recruiters or clients." },
+    { "term": "Case study", "match": ["case study", "case studies"], "simple": "A short write-up of a project: the problem, what you built and what happened." },
+    { "term": "Audit → pilot → retainer", "match": ["audit", "audits", "pilot", "pilots", "retainer"], "simple": "Audit: study a business to find work AI can improve. Pilot: a small trial to prove it works. Retainer: the client pays you every month to keep it running." },
+    { "term": "Self-paced", "match": ["self-paced"], "simple": "You learn on your own schedule. There are no fixed class times." },
+    { "term": "EMI", "match": ["EMI"], "simple": "Paying in monthly instalments instead of all at once." },
+    { "term": "GST", "match": ["GST"], "simple": "India’s tax on goods and services." },
+    { "term": "SaaS", "match": ["SaaS"], "simple": "Software you rent online, usually paid every month." },
+    { "term": "Freelancing", "match": ["freelancing", "freelancer", "freelancers"], "simple": "Working for different clients on your own, project by project." },
+    { "term": "Production", "match": ["production", "production-grade"], "simple": "The real, live version of an app that people actually use (not a test copy)." }
+  ]
+}
