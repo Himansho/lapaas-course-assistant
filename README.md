@@ -98,7 +98,7 @@ The API address is worked out from the script's own `src`, so nothing else is ne
 | `data-mode` + `data-target` | `inline` + `#assistant` | Render inside an element instead of floating |
 
 JavaScript API: `window.LapaasAssistant.open()`, `.close()`, `.toggle()`, `.restart()`.
-Theme: by default the widget uses the course page’s own look (Inter + Plus Jakarta Sans; ink `#11110f`, paper `#f5f5ef`, lime `#b9f24b`), so it feels native when embedded there. No Lapaas logo or assets are used. To change it, set CSS custom properties on the host page, for example `--lca-accent`, `--lca-mark`, `--lca-ink`, `--lca-font`.
+Theme: a calm chat look with the course page’s lime accent (`#b9f24b`) used only for primary actions, white and off-white surfaces, and the Inter font, so it feels native when embedded there. No Lapaas logo or assets are used. To change it, set CSS custom properties on the host page: `--lca-accent`, `--lca-user` (visitor bubbles), `--lca-ink` (text) and `--lca-font`.
 
 **On cohort.lapaas.com** the WhatsApp button already sits in the bottom-right corner, so embed with `data-position="left"`:
 
@@ -132,8 +132,8 @@ lib/gemini.js          Gemini REST client: model discovery, JSON schema, retries
 lib/glossary.js        plain-word meanings for jargon in answers
 lib/http.js            small request/response helpers
 public/index.html      landing section (headline, value proposition, 3 verified benefits, CTA)
-public/styles.css      landing styles (course-page theme, motion, reduced-motion support)
-public/landing.js      landing motion: chat preview, stage cycling, scroll reveal, simple-words cards
+public/styles.css      landing styles (calm layout, one accent colour, reduced-motion support)
+public/landing.js      opens the assistant from the landing-page buttons
 public/chat.html       full-page chat (share link / iframe)
 public/demo.html       phone-friendly slides for the 5-minute demo
 public/widget.js       the embeddable widget (single file)
