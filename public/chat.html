@@ -1,11 +1,20 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Is this course right for me? | Lapaas AI Product Engineering (prototype)</title>
   <meta name="description" content="Answer 5 quick questions and see if the Lapaas AI Product Engineering course suits you. Internship prototype, not an official Lapaas page.">
   <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#11110f">
+  <script>
+    /* Theme before first paint (default dark); the chat's own toggle changes it. */
+    (function () {
+      var t = "dark";
+      try { t = localStorage.getItem("lca-theme") === "light" ? "light" : "dark"; } catch (e) {}
+      document.documentElement.setAttribute("data-theme", t);
+    })();
+  </script>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23b9f24b'/%3E%3Ctext x='16' y='23' font-size='20' font-family='Arial' font-weight='700' text-anchor='middle' fill='%2311110f'%3E%3F%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,6 +30,8 @@
       display: flex; justify-content: center;
       padding: env(safe-area-inset-top) 0 0;
     }
+    html[data-theme="dark"] body { background: #11110f; }
+    html[data-theme="dark"] { color-scheme: dark; }
     #assistant { width: min(720px, 100%); height: 100%; height: 100dvh; padding: 16px; box-sizing: border-box; }
     @media (max-width: 520px) { #assistant { padding: 0; } }
   </style>
@@ -28,5 +39,10 @@
 <body>
   <main id="assistant" aria-label="Is this course right for me? assistant"></main>
   <script src="/widget.js" defer data-mode="inline" data-target="#assistant"></script>
+  <script>
+    new MutationObserver(function () {
+      document.querySelector("meta[name=theme-color]").content = document.documentElement.getAttribute("data-theme") === "light" ? "#f7f7f3" : "#11110f";
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+  </script>
 </body>
 </html>

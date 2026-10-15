@@ -149,12 +149,14 @@
       var d = document.documentElement, btn = document.querySelector(".theme-toggle"), meta = document.querySelector("meta[name=theme-color]");
       function apply(t) {
         var label = t === "dark" ? "Switch to light theme" : "Switch to dark theme";
-        d.setAttribute("data-theme", t);
+        if (d.getAttribute("data-theme") !== t) d.setAttribute("data-theme", t);
         btn.setAttribute("aria-label", label);
         btn.title = label;
         if (meta) meta.content = t === "dark" ? "#11110f" : "#ffffff";
       }
       apply(d.getAttribute("data-theme"));
+      // The chat has its own toggle; keep this button and the browser bar in step with it.
+      new MutationObserver(function () { apply(d.getAttribute("data-theme")); }).observe(d, { attributes: true, attributeFilter: ["data-theme"] });
       btn.addEventListener("click", function () {
         var t = d.getAttribute("data-theme") === "dark" ? "light" : "dark";
         apply(t);

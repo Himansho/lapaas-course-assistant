@@ -10,6 +10,7 @@
  *   data-mode="inline"           render inside data-target instead of floating
  *   data-target="#selector"      container for inline mode
  *   data-label="..."             launcher text
+ *   data-theme="dark|light"      starting theme if the page has none (default dark)
  * API:  window.LapaasAssistant.open() / .close() / .toggle() / .restart()
  * Theme: set CSS custom properties on the page, e.g. --lca-accent, --lca-font.
  */
@@ -70,6 +71,7 @@
     '.head .name{flex:1;min-width:0;font-weight:600;font-size:15px;display:flex;align-items:center;gap:8px;white-space:nowrap}',
     '.head .name .nm{overflow:hidden;text-overflow:ellipsis}',
     '@media (max-width:420px){.hbtn .lbl{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}}',
+    '.panel:not(.inline) .hbtn .lbl{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}',
     '.tag-proto{font-weight:500;font-size:11px;color:var(--_soft);border:1px solid var(--_line);border-radius:999px;padding:1px 8px}',
     '.hbtn{border:0;background:transparent;min-width:44px;height:44px;padding:0 10px;border-radius:10px;color:var(--_soft);font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:6px}',
     '.hbtn:hover{background:var(--_bot);color:var(--_text)}',
@@ -143,12 +145,22 @@
     '.send svg{width:20px;height:20px}',
     '.foot{margin:0;padding:0 14px 10px;font-size:11.5px;color:var(--_soft);background:#fff;padding-bottom:max(10px,env(safe-area-inset-bottom))}',
     '.foot a{text-underline-offset:2px}',
+    /* Dark theme (default). Same lime accent; light text on near-black. */
+    ':host([data-theme=dark]){--_text:#edede7;--_soft:#a9aaa2;--_bg:#161614;--_bot:#262622;--_line:#30302b;--_focus:#7fa8ff;--_warn:#ff9f8f;color-scheme:dark}',
+    ':host([data-theme=dark]) .opt:not(.selected),:host([data-theme=dark]) .chip:not(.main),:host([data-theme=dark]) .card,:host([data-theme=dark]) .btn.secondary,:host([data-theme=dark]) .compose input{background:#1d1d1a;border-color:#3d3d37}',
+    ':host([data-theme=dark]) .opt:not([disabled]):not(.selected):hover,:host([data-theme=dark]) .chip:not(.main):not([disabled]):hover,:host([data-theme=dark]) .compose input:focus{border-color:var(--_text)}',
+    ':host([data-theme=dark]) .btn.secondary:hover{border-color:var(--_text);background:var(--_bot)}',
+    ':host([data-theme=dark]) .compose,:host([data-theme=dark]) .foot{background:var(--_bg)}',
+    ':host([data-theme=dark]) .bar{background:#34342e}',
+    ':host([data-theme=dark]) .panel{box-shadow:0 24px 64px rgba(0,0,0,.55)}',
     '@media (prefers-reduced-motion:reduce){*,*::before{animation:none!important;transition:none!important}.log{scroll-behavior:auto}}',
   ].join('');
 
   var ICON_CLOSE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.3 5.7a1 1 0 0 0-1.4 0L12 10.6 7.1 5.7a1 1 0 0 0-1.4 1.4l4.9 4.9-4.9 4.9a1 1 0 1 0 1.4 1.4l4.9-4.9 4.9 4.9a1 1 0 0 0 1.4-1.4L13.4 12l4.9-4.9a1 1 0 0 0 0-1.4z"/></svg>';
   var ICON_RESTART = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 5V2L7 6l5 4V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7z"/></svg>';
   var ICON_SEND = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3.4 20.4 21 12 3.4 3.6l.1 6.5L15 12 3.5 13.9z"/></svg>';
+  var ICON_SUN = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+  var ICON_MOON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>';
   var ICON_CHAT = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 4h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-5 4v-4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg>';
 
   // ---------- state ----------
@@ -222,11 +234,13 @@
 
   var titleId = 'lca-title';
   var restartBtn = el('button', { class: 'hbtn', type: 'button', title: 'Start over', onclick: function () { restart(); } }, [el('span', { html: ICON_RESTART }), el('span', { class: 'lbl', text: 'Start over' })]);
+  var themeBtn = el('button', { class: 'hbtn', type: 'button', onclick: function () { setTheme(theme === 'dark' ? 'light' : 'dark', true); } });
   var closeBtn = INLINE ? null : el('button', { class: 'hbtn', type: 'button', 'aria-label': 'Close', html: ICON_CLOSE, onclick: function () { close(); } });
   var head = el('div', { class: 'head' }, [
     el('div', { class: 'avatar', 'aria-hidden': 'true', text: '?' }),
     el('div', { class: 'name', id: titleId }, [el('span', { class: 'nm', text: 'Lapaas course assistant' }), el('span', { class: 'tag-proto', text: 'Prototype' })]),
     restartBtn,
+    themeBtn,
     closeBtn,
   ]);
 
@@ -240,6 +254,36 @@
 
   if (!INLINE) root.appendChild(launcher);
   root.appendChild(panel);
+
+  // ---------- theme: dark by default; follows the page's data-theme and remembers the choice ----------
+  var THEME_KEY = 'lca-theme';
+  function pageTheme() {
+    var t = document.documentElement.getAttribute('data-theme');
+    return t === 'light' || t === 'dark' ? t : null;
+  }
+  function savedTheme() {
+    try { var t = localStorage.getItem(THEME_KEY); return t === 'light' || t === 'dark' ? t : null; } catch (e) { return null; }
+  }
+  var theme = pageTheme() || savedTheme() || (opt.theme === 'light' ? 'light' : 'dark');
+  function setTheme(t, fromUser) {
+    theme = t;
+    host.setAttribute('data-theme', t);
+    var label = t === 'dark' ? 'Switch to light theme' : 'Switch to dark theme';
+    themeBtn.setAttribute('aria-label', label);
+    themeBtn.title = label;
+    themeBtn.innerHTML = t === 'dark' ? ICON_SUN : ICON_MOON;
+    if (fromUser) {
+      try { localStorage.setItem(THEME_KEY, t); } catch (e) { /* private mode */ }
+      if (pageTheme() && pageTheme() !== t) document.documentElement.setAttribute('data-theme', t);
+    }
+  }
+  setTheme(theme);
+  if (window.MutationObserver) {
+    new MutationObserver(function () {
+      var t = pageTheme();
+      if (t && t !== theme) setTheme(t);
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  }
 
   // ---------- helpers ----------
   function scrollDown() { log.scrollTop = log.scrollHeight; }
