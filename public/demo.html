@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Demo slides: Course fit-check assistant (Himanshu Bartwal)</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#11110f">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23b9f24b'/%3E%3Ctext x='16' y='23' font-size='20' font-family='Arial' font-weight='700' text-anchor='middle' fill='%2311110f'%3E%3F%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root { --ink:#11110f; --paper:#f5f5ef; --lime:#b9f24b; --coral:#ff6b5e; --blue:#4f72ff; --muted:rgba(255,255,255,.7); }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; background: var(--ink); color: #fff; font: 17px/1.5 Inter, system-ui, sans-serif; }
+    .deck { height: 100dvh; overflow-y: auto; scroll-snap-type: y mandatory; }
+    .slide { position: relative; min-height: 100dvh; scroll-snap-align: start; padding: 64px 24px 72px; display: flex; flex-direction: column; justify-content: center; max-width: 760px; margin: 0 auto; }
+    .slide.light { background: var(--paper); color: var(--ink); max-width: none; }
+    .slide.light > * { width: 100%; max-width: 712px; margin-left: auto; margin-right: auto; }
+    .num { position: absolute; top: 22px; left: 24px; font: 800 13px/1 "Plus Jakarta Sans", sans-serif; color: var(--lime); letter-spacing: .04em; }
+    .light .num { color: var(--blue); }
+    .eyebrow { display: flex; align-items: center; gap: 9px; margin: 0 0 16px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+    .light .eyebrow { color: #4d4e48; }
+    .eyebrow::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--lime); }
+    h1, h2 { font-family: "Plus Jakarta Sans", sans-serif; letter-spacing: -.03em; line-height: 1.05; margin: 0 0 18px; }
+    h1 { font-size: clamp(38px, 9vw, 64px); }
+    h2 { font-size: clamp(30px, 7.4vw, 48px); }
+    .lime { color: var(--lime); }
+    .light .lime { color: #5b8a00; }
+    p { margin: 0 0 14px; }
+    .muted { color: var(--muted); }
+    .light .muted { color: #55564f; }
+    ul { margin: 6px 0 0; padding: 0; list-style: none; }
+    li { position: relative; padding: 10px 0 10px 28px; border-top: 1px solid rgba(255,255,255,.14); }
+    .light li { border-color: rgba(17,17,15,.14); }
+    li::before { content: ""; position: absolute; left: 2px; top: 19px; width: 12px; height: 12px; border-radius: 50%; background: var(--lime); }
+    b { font-weight: 700; }
+    .quote { border-left: 3px solid var(--coral); padding: 4px 0 4px 14px; font: 700 20px/1.4 "Plus Jakarta Sans", sans-serif; margin: 10px 0 16px; }
+    .cards { display: grid; gap: 10px; margin-top: 8px; }
+    .card { border: 1px solid rgba(255,255,255,.18); border-radius: 8px; padding: 14px 16px; background: rgba(255,255,255,.05); }
+    .light .card { border-color: rgba(17,17,15,.16); background: #fff; }
+    .card b { display: block; font-family: "Plus Jakarta Sans", sans-serif; font-size: 18px; }
+    .card span { font-size: 15px; }
+    .big { font: 800 clamp(44px, 12vw, 80px)/1 "Plus Jakarta Sans", sans-serif; color: var(--lime); }
+    .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 8px 0 14px; }
+    .stat { border: 1px solid rgba(255,255,255,.18); border-radius: 8px; padding: 14px; }
+    .stat strong { display: block; font: 800 30px/1.1 "Plus Jakarta Sans", sans-serif; color: var(--lime); }
+    .stat span { font-size: 14px; color: var(--muted); }
+    .flow { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 16px; }
+    .flow span { padding: 8px 12px; border-radius: 999px; background: var(--lime); color: var(--ink); font-weight: 700; font-size: 15px; }
+    .flow i { align-self: center; font-style: normal; color: var(--muted); }
+    .link { display: inline-block; margin-top: 10px; padding: 14px 18px; border-radius: 6px; background: var(--lime); color: var(--ink); font-weight: 800; text-decoration: none; word-break: break-all; }
+    .tag { font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: rgba(255,107,94,.18); color: #ffb3ab; }
+    .light .tag { background: #ffe9e6; color: #8f2b21; }
+    .small { font-size: 13px; color: var(--muted); }
+    .light .small { color: #55564f; }
+    .hint { position: absolute; bottom: 22px; left: 0; right: 0; text-align: center; font-size: 13px; color: var(--muted); animation: bob 1.8s ease-in-out infinite; }
+    .light .hint { color: #55564f; }
+    @keyframes bob { 0%,100% { transform: translateY(0); opacity: .5; } 50% { transform: translateY(4px); opacity: 1; } }
+    .disclaimer { position: fixed; top: 0; left: 0; right: 0; z-index: 5; padding: 6px 12px; text-align: center; font-size: 11px; background: rgba(29,29,25,.92); color: rgba(255,255,255,.8); }
+    @media (prefers-reduced-motion: reduce) { .hint { animation: none; } }
+  </style>
+</head>
+<body>
+  <p class="disclaimer">Prototype by Himanshu Bartwal for the Lapaas internship assignment. Not an official Lapaas page.</p>
+  <main class="deck">
+
+    <section class="slide" aria-label="Slide 1">
+      <span class="num">01 / 09</span>
+      <p class="eyebrow">Lapaas AI internship · Round 2</p>
+      <h1><span class="lime">“Is this AI course</span> right for me?”</h1>
+      <p class="muted">An honest course-discovery assistant for the Lapaas AI Product Engineering course.</p>
+      <p><b>Himanshu Bartwal</b></p>
+      <p class="hint">Swipe up ↑</p>
+    </section>
+
+    <section class="slide light" aria-label="Slide 2">
+      <span class="num">02 / 09</span>
+      <p class="eyebrow">The problem</p>
+      <h2>A student’s doubts are <span class="lime">personal</span>.</h2>
+      <ul>
+        <li>“I don’t know coding. Can I really do this?”</li>
+        <li>“Will this help me get a job?”</li>
+        <li>“Is ₹2,999 worth it for <b>my</b> goal?”</li>
+      </ul>
+      <p style="margin-top:16px">The course page shows the <b>same FAQ to everyone</b>. The only next steps are the ₹2,999 buy button or WhatsApp.</p>
+      <p class="small">Audience I chose: students &amp; freshers, a group the course page names directly.</p>
+    </section>
+
+    <section class="slide" aria-label="Slide 3">
+      <span class="num">03 / 09</span>
+      <p class="eyebrow">Research &amp; key insight</p>
+      <h2>Every competitor gives a <span class="lime">free, personal first step</span>.</h2>
+      <div class="cards">
+        <div class="card"><b>100xEngineers</b><span>₹1,59,490 live cohort → free masterclass + application + personal roadmap</span></div>
+        <div class="card"><b>Codebasics</b><span>US$50 self-paced → many free preview lectures</span></div>
+        <div class="card"><b>Outskill</b><span>Free 2-day workshop → paid programme later</span></div>
+      </div>
+      <p style="margin-top:14px">Lapaas goes straight from information to a ₹2,999 buy button.</p>
+      <p class="small">Prices as shown on each official page, checked 14 Oct 2026.</p>
+    </section>
+
+    <section class="slide light" aria-label="Slide 4">
+      <span class="num">04 / 09</span>
+      <p class="eyebrow">My solution</p>
+      <h2>An instant, honest <span class="lime">fit check</span>.</h2>
+      <div class="flow"><span>5 quick taps</span><i>→</i><span>Honest fit check</span><i>→</i><span>Ask anything</span><i>→</i><span>Next step</span></div>
+      <ul>
+        <li>Every fact comes from the <b>official course page</b> (36 checked questions).</li>
+        <li>If the page doesn’t say it, it answers <b>“I can’t verify that”</b> and points to the Lapaas team.</li>
+        <li>Jargon like RAG or MCP is explained in <b>simple words</b>.</li>
+        <li>Collects <b>no</b> name, phone or email. One script tag to embed on the course page.</li>
+      </ul>
+    </section>
+
+    <section class="slide" aria-label="Slide 5">
+      <span class="num">05 / 09</span>
+      <p class="eyebrow">How it stays honest</p>
+      <h2>A wrong price or a promised job <span class="lime">costs more trust than it wins</span>.</h2>
+      <ul>
+        <li><b>Fit check = fixed rules, no AI.</b> It can only quote checked facts.</li>
+        <li><b>Typed questions:</b> Gemini drafts an answer, then my server checks every number, price and promise against the cited facts.</li>
+        <li>If a check fails, the visitor sees the verified answer instead.</li>
+      </ul>
+      <p class="quote" style="margin-top:18px">Ask “Is access 6 months?” → it says 3 months.</p>
+    </section>
+
+    <section class="slide light" aria-label="Slide 6">
+      <span class="num">06 / 09</span>
+      <p class="eyebrow">Live demo</p>
+      <h2>Let’s try it.</h2>
+      <p>Final-year student · no coding · wants portfolio projects · 3–6 hrs a week.</p>
+      <p>Then: “Can I watch on phone and laptop both?” and “Is access 6 months?”</p>
+      <a class="link" href="/">lapaas-course-assistant.vercel.app</a>
+    </section>
+
+    <section class="slide" aria-label="Slide 7">
+      <span class="num">07 / 09</span>
+      <p class="eyebrow">Test results</p>
+      <h2>Tested before and after going live.</h2>
+      <div class="stats">
+        <div class="stat"><strong>10</strong><span>scenarios (5 required + 5 extra)</span></div>
+        <div class="stat"><strong>60</strong><span>answers checked across 5 runs</span></div>
+        <div class="stat"><strong>0</strong><span>invented prices, durations or job promises</span></div>
+        <div class="stat"><strong>7</strong><span>improvements made from tests &amp; review</span></div>
+      </div>
+      <p>Example fix: first answer on the live site took <b>20.7 s</b> → now <b>3.4 s</b>.</p>
+      <p id="tester-line" class="small">Real tester feedback (3 students): <span class="tag">being collected</span></p>
+    </section>
+
+    <section class="slide light" aria-label="Slide 8">
+      <span class="num">08 / 09</span>
+      <p class="eyebrow">Business impact &amp; next 30 days</p>
+      <h2>First metric: <span class="lime">clicks to the course page</span>.</h2>
+      <ul>
+        <li><b>2-week pilot:</b> embed on the course page; UTM-tagged links measure clicks to the course page and WhatsApp.</li>
+        <li><b>Proposed targets</b> (not results yet): ≥ 60% finish the fit check · ≥ 20% of them click through · 0 invented claims.</li>
+        <li><b>Next:</b> turn “can’t verify” questions into page fixes · recommend a free sample lesson · better Hindi · help existing learners (e.g. device requests).</li>
+      </ul>
+    </section>
+
+    <section class="slide" aria-label="Slide 9">
+      <span class="num">09 / 09</span>
+      <p class="eyebrow">Thank you</p>
+      <h2>Honest answers help students <span class="lime">decide with confidence</span>.</h2>
+      <p>Try it: <a class="link" href="/">lapaas-course-assistant.vercel.app</a></p>
+      <p class="small" style="margin-top:14px">Code: github.com/Himansho/lapaas-course-assistant</p>
+      <p class="small">Himanshu Bartwal</p>
+    </section>
+
+  </main>
+</body>
+</html>
